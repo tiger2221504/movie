@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip
+from PIL import Image
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
@@ -12,8 +13,8 @@ st.title('動画編集アプリ')
 # 事前に指定する最初と最後の動画を読み込む
 opening_video_path = os.path.join(current_dir, 'opening.mp4')
 ending_video_path = os.path.join(current_dir, 'ending.mp4')
-predefined_video = VideoFileClip(opening_video_path).resize((1280, 720))  # リサイズ
-final_video = VideoFileClip(ending_video_path).resize((1280, 720))  # リサイズ
+predefined_video = VideoFileClip(opening_video_path).resize((1280, 720), Image.Resampling.LANCZOS)  # リサイズ
+final_video = VideoFileClip(ending_video_path).resize((1280, 720), Image.Resampling.LANCZOS)  # リサイズ
 
 # 音声ファイルと動画ファイルをアップロード
 audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
@@ -43,8 +44,8 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             audio_clip_2 = AudioFileClip(tmp_audio_2.name)
             
             # 動画ファイルを読み込む
-            clip_1 = VideoFileClip(tmp_video_1.name).resize((1280, 720))
-            clip_2 = VideoFileClip(tmp_video_2.name).resize((1280, 720))
+            clip_1 = VideoFileClip(tmp_video_1.name).resize((1280, 720), Image.Resampling.LANCZOS)
+            clip_2 = VideoFileClip(tmp_video_2.name).resize((1280, 720), Image.Resampling.LANCZOS)
             
             # 最初の動画の再生時間の途中で音声1を再生（スタートから5秒後に再生開始）
             start_time = 5
