@@ -8,6 +8,9 @@ import numpy as np
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
 
+# 日本語フォントのパスを指定 (NotoSansCJKjp-Regular.otf などの日本語フォントファイル)
+font_path = os.path.join(current_dir, 'SOURCEHANSANSJP-BOLD.OTF')
+
 # タイトル
 st.title('動画編集アプリ')
 
@@ -62,7 +65,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             # PILを使って静止画像にテキストを描画
             image = Image.fromarray(last_frame)
             draw = ImageDraw.Draw(image)
-            font = ImageFont.load_default()  # デフォルトフォントを使用
+            font = ImageFont.truetype(font_path, 90)  # フォントサイズ90
             text = "最後のコマ"
             text_bbox = draw.textbbox((0, 0), text, font=font)  # テキストのバウンディングボックスを取得
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]  # 幅と高さを計算
