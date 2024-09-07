@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip
-from moviepy.audio.AudioClip import AudioArrayClip, concatenate_audioclips
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
@@ -22,10 +21,10 @@ ending_video_path = os.path.join(current_dir, 'ending.mp4')
 ending_file = VideoFileClip(ending_video_path)
 
 # 音声ファイルと動画ファイルをアップロード
-audio_file_1 = st.file_uploader("1つ目の音声ファイル(リード部分)をアップロードしてください", type=["mp3", "wav"])
-audio_file_2 = st.file_uploader("2つ目の音声ファイル(出現場所の紹介)をアップロードしてください", type=["mp3", "wav"])
-video_file_1 = st.file_uploader("1つ目の動画ファイル(GoogleEarth1つ目)をアップロードしてください", type=["mp4", "mov", "avi"])
-video_file_2 = st.file_uploader("2つ目の動画ファイル(GoogleEarth2つ目)をアップロードしてください", type=["mp4", "mov", "avi"])
+audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
+audio_file_2 = st.file_uploader("2つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
+video_file_1 = st.file_uploader("1つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
+video_file_2 = st.file_uploader("2つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
 
 # アップロードされたファイルが全て存在するかチェック
 if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
@@ -48,16 +47,6 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
 
-            # 【1秒間の無音を生成】
-            sample_rate = audio_clip_2.fps  # 音声のサンプルレートを取得
-            silence_duration = 1  # 無音の長さを1秒に設定
-            silence_array = np.zeros((int(sample_rate * silence_duration), 2))  # ステレオで無音の波形
-            silent_audio_clip = AudioArrayClip([silence_array], fps=sample_rate)  # 無音のAudioArrayClipを作成
-
-            # 【無音を2つの音声に連結】
-            audio_clip_1 = concatenate_audioclips([audio_clip_1, silent_audio_clip])
-            audio_clip_2 = concatenate_audioclips([audio_clip_2, silent_audio_clip])
-
             # 【前半部分のclip_3を作成】
             # opening_fileのもとの音声とaudio_clip_1を重ねる
             start_time = 4
@@ -66,10 +55,9 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             video_with_audio_1 = opening_file.set_audio(combined_audio)
 
             # 音声ファイルが終了した時点で、opening_fileをカット
-            end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
+            end_time = min(start_time + audio_clip_1.duration + 1, opening_file.duration)
             clip_3 = video_with_audio_1.subclip(0, end_time)
 
-                 
             # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
             last_frame_time = clip_1.duration  # 1つ目の動画の最後のフレームの時間
             last_frame = clip_1.get_frame(last_frame_time - 0.04)  # 最後のコマを取得（微調整）
