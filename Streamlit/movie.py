@@ -21,34 +21,36 @@ audio_file_2 = st.file_uploader("2つ目の音声ファイルをアップロー�
 video_file_1 = st.file_uploader("1つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
 video_file_2 = st.file_uploader("2つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
 
-
 # アップロードされたファイルが全て存在するかチェック
-if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
-    
+if opening_file and ending_file and audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
     try:
         # 一時ファイルを作成してアップロードされたファイルを保存
-        with tempfile.NamedTemporaryFile(delete=False) as tmp_audio_1, \
-             tempfile.NamedTemporaryFile(delete=False) as tmp_audio_2, \
-             tempfile.NamedTemporaryFile(delete=False) as tmp_video_1, \
-             tempfile.NamedTemporaryFile(delete=False) as tmp_video_2:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_opening, \
+             tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_ending, \
+             tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_audio_1, \
+             tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_audio_2, \
+             tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_video_1, \
+             tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_video_2:
             
             # ファイルを保存
+            tmp_opening.write(opening_file.read())
+            tmp_ending.write(ending_file.read())
             tmp_audio_1.write(audio_file_1.read())
             tmp_audio_2.write(audio_file_2.read())
             tmp_video_1.write(video_file_1.read())
             tmp_video_2.write(video_file_2.read())
 
-            # 音声ファイルを読み込む
+            # ファイルを読み込む
+            predefined_video = VideoFileClip(tmp_opening.name)
+            final_video = VideoFileClip(tmp_ending.name)
             audio_clip_1 = AudioFileClip(tmp_audio_1.name)
             audio_clip_2 = AudioFileClip(tmp_audio_2.name)
-            
-            # 動画ファイルを読み込む
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
             
-             # 動画の長さを取得
+            # 動画の長さを取得
             video_duration = predefined_video.duration
-            start_time = 4
+            start_time = 5  # 最初の動画の再生時間の途中で音声1を再生（スタートから5秒後に再生開始）
             
             # 音声1が終了した後に、動画の長さを超えないようにする
             end_time = min(start_time + audio_clip_1.duration, video_duration)  # 動画の長さを超えないように制限
@@ -57,7 +59,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             video_with_audio_1 = predefined_video.set_audio(audio_clip_1.set_start(start_time))
 
             # 音声1が終了した後に、アップロードされた1つ目の動画に切り替え
-            video_with_audio_1_cut = video_with_audio_1.subclip(0, start_time + audio_clip_1.duration)
+            video_with_audio_1_cut = video_with_audio_1.subclip(0, end_time)
             
             # 1つ目の動画終了後に、2つ目の動画に切り替え
             final_combined_video = concatenate_videoclips([
@@ -75,3 +77,5 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
     except Exception as e:
         st.error(f"エラーが発生しました: {e}")
+else:
+    st.write("すべてのファイルをアップロードしてください。")
