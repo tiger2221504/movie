@@ -11,9 +11,9 @@ st.title('動画編集アプリ')
 
 # 事前に指定する最初と最後の動画を読み込む
 opening_video_path = os.path.join(current_dir, 'opening.mp4')
-predefined_file = VideoFileClip(opening_video_path)
+opening_file = VideoFileClip(opening_video_path)
 ending_video_path = os.path.join(current_dir, 'ending.mp4')
-final_file = VideoFileClip(ending_video_path)
+ending_file = VideoFileClip(ending_video_path)
 
 # 音声ファイルと動画ファイルをアップロード
 audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
