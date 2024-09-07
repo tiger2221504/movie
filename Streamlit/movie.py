@@ -21,10 +21,10 @@ ending_video_path = os.path.join(current_dir, 'ending.mp4')
 ending_file = VideoFileClip(ending_video_path)
 
 # 音声ファイルと動画ファイルをアップロード
-audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
-audio_file_2 = st.file_uploader("2つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
-video_file_1 = st.file_uploader("1つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
-video_file_2 = st.file_uploader("2つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
+audio_file_1 = st.file_uploader("1つ目の音声ファイル(リード部分)をアップロードしてください", type=["mp3", "wav"])
+audio_file_2 = st.file_uploader("2つ目の音声ファイル(出現場所の紹介)をアップロードしてください", type=["mp3", "wav"])
+video_file_1 = st.file_uploader("1つ目の動画ファイル(GoogleEarth1つ目)をアップロードしてください", type=["mp4", "mov", "avi"])
+video_file_2 = st.file_uploader("2つ目の動画ファイル(GoogleEarth2つ目)をアップロードしてください", type=["mp4", "mov", "avi"])
 
 # アップロードされたファイルが全て存在するかチェック
 if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
@@ -92,7 +92,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
             clip_4_with_audio = clip_4.set_audio(audio_clip_2)
-            end_time_audio_2 = min(audio_clip_2.duration + 1, clip_4_with_audio.duration)
+            end_time_audio_2 = min(audio_clip_2.duration+1, clip_4_with_audio.duration)
             clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2)
 
             # 【完成版の作成】
