@@ -55,7 +55,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             video_with_audio_1 = opening_file.set_audio(combined_audio)
 
             # 音声ファイルが終了した時点で、opening_fileをカット
-            end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
+            end_time = min(start_time + audio_clip_1.duration + 1, opening_file.duration)
             clip_3 = video_with_audio_1.subclip(0, end_time)
 
             # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
@@ -69,14 +69,16 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             text = "最後のコマ"
             text_bbox = draw.textbbox((0, 0), text, font=font)  # テキストのバウンディングボックスを取得
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]  # 幅と高さを計算
-            text_position = ((image.width - text_width) // 2, (image.height - text_height) // 2)
+
+            # 右上にテキストを配置（X座標は右端に、Y座標は少し余裕を持たせて上から10ピクセルの位置）
+            text_position = (image.width - text_width - 10, 10)
 
             # 黒い縁取りを追加（8方向に黒いテキストを描画）
-            offset = 3  # 縁取りの幅
+            offset = 4  # 縁取りの幅
             for dx, dy in [(-offset, 0), (offset, 0), (0, -offset), (0, offset), (-offset, -offset), (offset, offset), (-offset, offset), (offset, -offset)]:
                 draw.text((text_position[0] + dx, text_position[1] + dy), text, font=font, fill="black")
 
-            # 中央に白いテキストを描画
+            # 白いテキストを描画
             draw.text(text_position, text, font=font, fill="white")
 
             
@@ -90,7 +92,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
             clip_4_with_audio = clip_4.set_audio(audio_clip_2)
-            end_time_audio_2 = min(audio_clip_2.duration, clip_4_with_audio.duration)
+            end_time_audio_2 = min(audio_clip_2.duration + 1, clip_4_with_audio.duration)
             clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2)
 
             # 【完成版の作成】
