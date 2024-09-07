@@ -12,8 +12,35 @@ current_dir = os.path.dirname(__file__)
 # 日本語フォントのパスを指定 (NotoSansCJKjp-Regular.otf などの日本語フォントファイル)
 font_path = os.path.join(current_dir, 'SOURCEHANSANSJP-BOLD.OTF')
 
+#ページコンフィグ
+st.set_page_config(
+     page_title="ヒグマ速報作成アプリ",
+     page_icon="🐻",
+     initial_sidebar_state="collapsed",
+     menu_items={
+         'About': """
+         # ヒグマ速報作成アプリ
+         動画を作れます。多分…
+         急に使えなくなったらすみませんm(__)m
+         @ 2024 yamazumi
+         """
+     }
+ )
+
 # タイトル
 st.title('ヒグマ速報作成アプリ')
+
+# 使い方
+exp = st.expander("🌟使い方", expanded=False)
+exp.write("1.PobllyでAI音声の作成")
+exp.write("　※リード部分の地名部分で2つのファイルに分ける")
+exp.write("　※2つとも最後は1秒くらい間を作っておくと聞きやすい")
+exp.write("2.GoogleEarthStudioで素材の作成")
+glink = '<a href="https://earth.google.com/studio/" target="_blank">GoogleEarth Studio</a>'
+exp.markdown(glink, unsafe_allow_html=True)
+exp.write("　※ズーム・回転の2種類")
+exp.write("　※回転の動画は長めに")
+exp.write("3.用意した4つの素材をアップロード")
 
 # 地名の入力
 text = st.text_input("地名を入力してください", value="")
