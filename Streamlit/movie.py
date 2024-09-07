@@ -3,6 +3,7 @@ import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
@@ -37,21 +38,11 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             tmp_video_1.write(video_file_1.read())
             tmp_video_2.write(video_file_2.read())
 
-            # ファイルの確認
-            st.write(f"音声ファイル1の保存場所: {tmp_audio_1.name}")
-            st.write(f"音声ファイル2の保存場所: {tmp_audio_2.name}")
-            st.write(f"動画ファイル1の保存場所: {tmp_video_1.name}")
-            st.write(f"動画ファイル2の保存場所: {tmp_video_2.name}")
-
             # 一時ファイルから読み込み
             audio_clip_1 = AudioFileClip(tmp_audio_1.name)
             audio_clip_2 = AudioFileClip(tmp_audio_2.name)
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
-
-            # ここで動画が正しく読み込まれたか確認
-            st.write(f"動画1の長さ: {clip_1.duration} 秒")
-            st.write(f"動画2の長さ: {clip_2.duration} 秒")
 
             # 【前半部分のclip_3を作成】
             # opening_fileのもとの音声とaudio_clip_1を重ねる
@@ -78,8 +69,9 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             text_position = ((image.width - text_width) // 2, (image.height - text_height) // 2)
             draw.text(text_position, text, font=font, fill="white")  # 白いテキストを中央に描画
 
-            # PILの画像をImageClipに変換し、2秒間の静止画を作成
-            image_clip = ImageClip(image).set_duration(2)
+            # PILの画像をnumpy配列に変換し、ImageClipに変換して2秒間の静止画を作成
+            image_np = np.array(image)  # PIL画像をnumpy配列に変換
+            image_clip = ImageClip(image_np).set_duration(2)
 
 
             # 【後半部分のclip_5を作成】
