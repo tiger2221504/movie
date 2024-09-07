@@ -50,7 +50,9 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             start_time = 4  # 最初の動画の再生時間の途中で音声1を再生（スタートから4秒後に再生開始）
 
             # 音声1を4秒後にセットし、動画を音声と同期
-            video_with_audio_1 = opening_file.set_audio(audio_clip_1.set_start(start_time))
+            # CompositeAudioClipを使って音声を4秒後にセットする
+            new_audio = CompositeAudioClip([audio_clip_1.set_start(start_time)])
+            video_with_audio_1 = opening_file.set_audio(new_audio)
 
             # 音声1の終了後に、最初の動画をカット
             end_time = min(start_time + audio_clip_1.duration, video_duration)
