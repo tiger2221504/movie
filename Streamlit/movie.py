@@ -75,4 +75,14 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
     except Exception as e:
         st.error(f"エラーが発生しました: {e}")
 else:
-    st.write("すべてのファイルをアップロードしてください。")
+    missing_files = []
+    if not audio_file_1:
+        missing_files.append("1つ目の音声ファイル")
+    if not audio_file_2:
+        missing_files.append("2つ目の音声ファイル")
+    if not video_file_1:
+        missing_files.append("1つ目の動画ファイル")
+    if not video_file_2:
+        missing_files.append("2つ目の動画ファイル")
+    if missing_files:
+        st.error(f"次のファイルが欠けています: {', '.join(missing_files)}")
