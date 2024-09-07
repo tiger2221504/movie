@@ -51,7 +51,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             # 【1秒間の無音を生成】
             sample_rate = audio_clip_2.fps  # 音声のサンプルレートを取得
             silence_duration = 1  # 無音の長さを1秒に設定
-            silence_array = np.zeros(int(sample_rate * silence_duration))  # 無音の波形を生成
+            silence_array = np.zeros((int(sample_rate * silence_duration), 2))  # ステレオで無音の波形
             silent_audio_clip = AudioArrayClip([silence_array], fps=sample_rate)  # 無音のAudioArrayClipを作成
 
             # 【無音を2つの音声に連結】
