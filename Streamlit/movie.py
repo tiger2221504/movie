@@ -1,3 +1,26 @@
+import os
+import streamlit as st
+from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip
+import tempfile
+
+# スクリプトのディレクトリを取得
+current_dir = os.path.dirname(__file__)
+
+# タイトル
+st.title('動画編集アプリ')
+
+# 事前に指定する最初と最後の動画を読み込む
+opening_video_path = os.path.join(current_dir, 'opening.mp4')
+opening_file = VideoFileClip(opening_video_path)
+ending_video_path = os.path.join(current_dir, 'ending.mp4')
+ending_file = VideoFileClip(ending_video_path)
+
+# 音声ファイルと動画ファイルをアップロード
+audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
+audio_file_2 = st.file_uploader("2つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
+video_file_1 = st.file_uploader("1つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
+video_file_2 = st.file_uploader("2つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
+
 # アップロードされたファイルが全て存在するかチェック
 if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
     try:
