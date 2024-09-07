@@ -42,37 +42,28 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
 
-            # 1つ目と2つ目のアップロードされた動画を連結して clip_3 を作成
-            clip_3 = concatenate_videoclips([clip_1, clip_2])
-
-            # 動画の長さを取得
-            video_duration = opening_file.duration
-            start_time = 4  # 最初の動画の再生時間の途中で音声1を再生（スタートから4秒後に再生開始）
-
-            # 音声1を4秒後にセットし、動画を音声と同期
-            # CompositeAudioClipを使って音声を4秒後にセットする
+            # 【前半部分のclip_3を作成】
+            # opening_fileの再生から4秒後にaudio_clip_1の再生を始める
+            start_time = 4
             new_audio = CompositeAudioClip([audio_clip_1.set_start(start_time)])
             video_with_audio_1 = opening_file.set_audio(new_audio)
 
-            # 音声1の終了後に、最初の動画をカット
-            end_time = min(start_time + audio_clip_1.duration, video_duration)
-            video_with_audio_1_cut = video_with_audio_1.subclip(0, end_time)
+            # 音声ファイルが終了した時点で、opening_fileをカット
+            end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
+            clip_3 = video_with_audio_1.subclip(0, end_time)
 
-            # 最初の動画の後に clip_3 を連結
-            video_combined_with_clip_3 = concatenate_videoclips([video_with_audio_1_cut, clip_3])
+            # 【後半部分のclip_5を作成】
+            # clip_1とclip_2を連結させてclip_4とする
+            clip_4 = concatenate_videoclips([clip_1, clip_2])
 
-            # clip_3 の再生開始と同時に、2つ目の音声ファイルを再生開始
-            video_with_audio_2 = video_combined_with_clip_3.set_audio(audio_clip_2)
+            # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
+            clip_4_with_audio = clip_4.set_audio(audio_clip_2)
+            end_time_audio_2 = min(audio_clip_2.duration, clip_4_with_audio.duration)
+            clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2)
 
-            # 2つ目の音声の終了後に clip_3 をカット
-            end_time_audio_2 = min(audio_clip_2.duration, video_with_audio_2.duration)
-            video_with_audio_2_cut = video_with_audio_2.subclip(0, end_time_audio_2)
-
-            # 最後に事前指定の動画を連結
-            final_combined_video = concatenate_videoclips([
-                video_with_audio_2_cut,  # 最初の動画＋clip_3
-                ending_file  # 最後に再生する事前指定動画
-            ])
+            # 【完成版の作成】
+            # clip_3とclip_5とending_fileを結合してfinal_combined_videoとする
+            final_combined_video = concatenate_videoclips([clip_3, clip_5, ending_file])
 
             file_name = "final_video.mp4"
 
