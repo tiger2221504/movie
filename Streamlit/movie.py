@@ -55,8 +55,8 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             silent_audio_clip = AudioArrayClip([silence_array], fps=sample_rate)  # 無音のAudioArrayClipを作成
 
             # 【無音を2つの音声に連結】
-            audio_clip_1 = concatenate_videoclips([audio_clip_1, silent_audio_clip])
-            audio_clip_2 = concatenate_videoclips([audio_clip_2, silent_audio_clip])
+            audio_clip_1 = concatenate_audioclips([audio_clip_1, silent_audio_clip])
+            audio_clip_2 = concatenate_audioclips([audio_clip_2, silent_audio_clip])
 
             # 【前半部分のclip_3を作成】
             # opening_fileのもとの音声とaudio_clip_1を重ねる
