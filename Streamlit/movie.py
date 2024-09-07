@@ -47,7 +47,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             clip_2 = VideoFileClip(tmp_video_2.name)
             
             # 最初の動画の再生時間の途中で音声1を再生（スタートから5秒後に再生開始）
-            start_time = 5
+            start_time = 4
             video_with_audio_1 = predefined_video.set_audio(audio_clip_1.set_start(start_time))
 
             # 音声1が終了した後に、アップロードされた1つ目の動画に切り替え
