@@ -73,8 +73,9 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             draw = ImageDraw.Draw(image)
             font = ImageFont.load_default()  # デフォルトフォントを使用
             text = "最後のコマ"
-            text_size = draw.textsize(text, font=font)
-            text_position = ((image.width - text_size[0]) // 2, (image.height - text_size[1]) // 2)
+            text_bbox = draw.textbbox((0, 0), text, font=font)  # テキストのバウンディングボックスを取得
+            text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]  # 幅と高さを計算
+            text_position = ((image.width - text_width) // 2, (image.height - text_height) // 2)
             draw.text(text_position, text, font=font, fill="white")  # 白いテキストを中央に描画
 
             # PILの画像をImageClipに変換し、2秒間の静止画を作成
