@@ -37,7 +37,6 @@ if st.button("決定して動画を作成"):
     if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
         try:
             progress_bar.progress(10)  # プログレスバーを更新
-            time.sleep(0.3)
             
             # 一時ファイルを作成してアップロードされたファイルを保存
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_audio_1, \
@@ -51,8 +50,7 @@ if st.button("決定して動画を作成"):
                 tmp_video_1.write(video_file_1.read())
                 tmp_video_2.write(video_file_2.read())
 
-                progress_bar.progress(30)  # プログレスバーを更新
-                time.sleep(0.3)
+                progress_bar.progress(25)  # プログレスバーを更新
     
                 # 一時ファイルから読み込み
                 audio_clip_1 = AudioFileClip(tmp_audio_1.name)
@@ -67,8 +65,7 @@ if st.button("決定して動画を作成"):
                 combined_audio = CompositeAudioClip([original_audio, audio_clip_1.set_start(start_time)])
                 video_with_audio_1 = opening_file.set_audio(combined_audio)
 
-                progress_bar.progress(50)  # プログレスバーを更新
-                time.sleep(0.3)
+                progress_bar.progress(40)  # プログレスバーを更新
     
                 # 音声ファイルが終了した時点で、opening_fileをカット
                 end_time = min(start_time + audio_clip_1.duration + 1, opening_file.duration)
@@ -101,8 +98,7 @@ if st.button("決定して動画を作成"):
                 image_np = np.array(image)  # PIL画像をnumpy配列に変換
                 image_clip = ImageClip(image_np).set_duration(5)
 
-                progress_bar.progress(70)  # プログレスバーを更新
-                time.sleep(0.3)
+                progress_bar.progress(60)  # プログレスバーを更新
     
                 # 【後半部分のclip_5を作成】
                 # clip_1とclip_2の間に2秒間のテキスト付き静止画像を挿入し、clip_4とする
@@ -119,7 +115,7 @@ if st.button("決定して動画を作成"):
     
                 file_name = "final_video.mp4"
 
-                progress_bar.progress(90)  # プログレスバーを更新
+                progress_bar.progress(70)  # プログレスバーを更新
     
                 # 編集した動画を保存して表示
                 final_combined_video.write_videofile(file_name)
