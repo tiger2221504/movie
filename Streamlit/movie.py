@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip
-from moviepy.audio.AudioClip import AudioArrayClip
+from moviepy.audio.AudioClip import AudioArrayClip, concatenate_audioclips
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
