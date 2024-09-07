@@ -1,6 +1,4 @@
---use-deprecated=legacy-resolver
 streamlit
 moviepy
-Pillow>=10.0.0
 imageio[ffmpeg]
 gdown
