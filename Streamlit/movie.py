@@ -33,13 +33,13 @@ st.title('ヒグマ速報作成アプリ')
 # 使い方
 exp = st.expander("🌟使い方", expanded=False)
 exp.write("1.PobllyでAI音声の作成")
-exp.write("\t※リード部分の地名部分で2つのファイルに分ける")
-exp.write("\t※2つとも最後は1秒くらい間を作っておくと聞きやすい")
+exp.write("  \t※リード部分の地名部分で2つのファイルに分ける")
+exp.write("  \t※2つとも最後は1秒くらい間を作っておくと聞きやすい")
 exp.write("2.GoogleEarthStudioで素材の作成")
 glink = '<a href="https://earth.google.com/studio/" target="_blank">GoogleEarth Studio</a>'
 exp.markdown(glink, unsafe_allow_html=True)
-exp.write("\t※ズーム・回転の2種類")
-exp.write("\t※回転の動画は長めに")
+exp.write("  \t※ズーム・回転の2種類")
+exp.write("  \t※回転の動画は長めに")
 exp.write("3.地名の入力")
 exp.write("4.用意した4つの素材をアップロード")
 
