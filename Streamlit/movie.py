@@ -65,7 +65,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
             last_frame_time = clip_1.duration  # 1つ目の動画の最後のフレームの時間
-            last_frame = clip_1.get_frame(last_frame_time - 0.01)  # 最後のコマを取得（微調整）
+            last_frame = clip_1.get_frame(last_frame_time - 0.1)  # 最後のコマを取得（微調整）
             image_clip = ImageClip(last_frame).set_duration(2)  # 2秒間の静止画として設定
 
             # 【静止画像にテキストを追加】
