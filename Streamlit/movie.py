@@ -53,9 +53,23 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
             clip_3 = video_with_audio_1.subclip(0, end_time)
 
+            # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
+            last_frame_time = clip_1.duration  # 1つ目の動画の最後のフレームの時間
+            last_frame = clip_1.get_frame(last_frame_time - 0.01)  # 最後のコマを取得（微調整）
+            image_clip = ImageClip(last_frame).set_duration(2)  # 2秒間の静止画として設定
+
+            # 【静止画像にテキストを追加】
+            text = "最後のコマ"
+            text_clip = TextClip(text, fontsize=50, color='white', bg_color='black', size=image_clip.size) \
+                        .set_duration(2) \
+                        .set_position(('center', 'center'))  # テキストを中央に配置
+
+            # 画像とテキストを合成
+            image_with_text = CompositeAudioClip([image_clip.set_audio(None), text_clip])
+
             # 【後半部分のclip_5を作成】
-            # clip_1とclip_2を連結させてclip_4とする
-            clip_4 = concatenate_videoclips([clip_1, clip_2])
+            # clip_1とclip_2の間に2秒間のテキスト付き静止画像を挿入し、clip_4とする
+            clip_4 = concatenate_videoclips([clip_1, image_with_text, clip_2])
 
             # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
             clip_4_with_audio = clip_4.set_audio(audio_clip_2)
@@ -75,14 +89,4 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
     except Exception as e:
         st.error(f"エラーが発生しました: {e}")
 else:
-    missing_files = []
-    if not audio_file_1:
-        missing_files.append("1つ目の音声ファイル")
-    if not audio_file_2:
-        missing_files.append("2つ目の音声ファイル")
-    if not video_file_1:
-        missing_files.append("1つ目の動画ファイル")
-    if not video_file_2:
-        missing_files.append("2つ目の動画ファイル")
-    if missing_files:
-        st.error(f"次のファイルが欠けています: {', '.join(missing_files)}")
+    st.write("すべてのファイルをアップロードしてください。")
