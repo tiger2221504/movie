@@ -1,5 +1,5 @@
 streamlit
 moviepy
-Pillow==9.3.0
+Pillow==8.4.0
 imageio[ffmpeg]
 gdown
