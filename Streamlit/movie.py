@@ -6,8 +6,8 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip
 st.title('動画編集アプリ')
 
 # 事前に指定する最初と最後の動画を読み込む
-predefined_video = VideoFileClip('opening.mp4')
-final_video = VideoFileClip('ending.mp4')
+predefined_video = VideoFileClip('./opening.mp4')
+final_video = VideoFileClip('./ending.mp4')
 
 # 音声ファイルと動画ファイルをアップロード
 audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
