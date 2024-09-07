@@ -76,7 +76,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # 【後半部分のclip_5を作成】
             # clip_1とclip_2の間に2秒間のテキスト付き静止画像を挿入し、clip_4とする
-            clip_4 = concatenate_videoclips([clip_1, image_with_text, clip_2])
+            clip_4 = concatenate_videoclips([clip_1, image_clip, clip_2])
 
             # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
             clip_4_with_audio = clip_4.set_audio(audio_clip_2)
