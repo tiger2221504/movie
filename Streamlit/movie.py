@@ -4,6 +4,7 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip,
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+import time
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
@@ -12,7 +13,7 @@ current_dir = os.path.dirname(__file__)
 font_path = os.path.join(current_dir, 'SOURCEHANSANSJP-BOLD.OTF')
 
 # タイトル
-st.title('動画編集アプリ')
+st.title('ヒグマ速報作成アプリ')
 
 # 地名の入力
 text = st.text_input("地名を入力してください", value="")
@@ -30,9 +31,14 @@ video_file_1 = st.file_uploader("1つ目の動画ファイルをアップロー�
 video_file_2 = st.file_uploader("2つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
 
 if st.button("決定して動画を作成"):
+    progress_bar = st.progress(0)  # プログレスバーの初期値
+    
     # アップロードされたファイルが全て存在するかチェック
     if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
         try:
+            progress_bar.progress(10)  # プログレスバーを更新
+            time.sleep(0.3)
+            
             # 一時ファイルを作成してアップロードされたファイルを保存
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_audio_1, \
                  tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_audio_2, \
@@ -44,6 +50,9 @@ if st.button("決定して動画を作成"):
                 tmp_audio_2.write(audio_file_2.read())
                 tmp_video_1.write(video_file_1.read())
                 tmp_video_2.write(video_file_2.read())
+
+                progress_bar.progress(30)  # プログレスバーを更新
+                time.sleep(0.3)
     
                 # 一時ファイルから読み込み
                 audio_clip_1 = AudioFileClip(tmp_audio_1.name)
@@ -57,6 +66,9 @@ if st.button("決定して動画を作成"):
                 original_audio = opening_file.audio  # 元の音声を取得
                 combined_audio = CompositeAudioClip([original_audio, audio_clip_1.set_start(start_time)])
                 video_with_audio_1 = opening_file.set_audio(combined_audio)
+
+                progress_bar.progress(50)  # プログレスバーを更新
+                time.sleep(0.3)
     
                 # 音声ファイルが終了した時点で、opening_fileをカット
                 end_time = min(start_time + audio_clip_1.duration + 1, opening_file.duration)
@@ -88,6 +100,9 @@ if st.button("決定して動画を作成"):
                 # PILの画像をnumpy配列に変換し、ImageClipに変換して5秒間の静止画を作成
                 image_np = np.array(image)  # PIL画像をnumpy配列に変換
                 image_clip = ImageClip(image_np).set_duration(5)
+
+                progress_bar.progress(70)  # プログレスバーを更新
+                time.sleep(0.3)
     
                 # 【後半部分のclip_5を作成】
                 # clip_1とclip_2の間に2秒間のテキスト付き静止画像を挿入し、clip_4とする
@@ -103,9 +118,13 @@ if st.button("決定して動画を作成"):
                 final_combined_video = concatenate_videoclips([clip_3, clip_5, ending_file])
     
                 file_name = "final_video.mp4"
+
+                progress_bar.progress(90)  # プログレスバーを更新
     
                 # 編集した動画を保存して表示
                 final_combined_video.write_videofile(file_name)
+
+                progress_bar.progress(100)  # プログレスバーを更新
                 st.video(file_name)
     
         except Exception as e:
