@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip
+from moviepy.audio.AudioClip import AudioArrayClip
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
@@ -47,6 +48,16 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
 
+            # 【1秒間の無音を生成】
+            sample_rate = audio_clip_2.fps  # 音声のサンプルレートを取得
+            silence_duration = 1  # 無音の長さを1秒に設定
+            silence_array = np.zeros(int(sample_rate * silence_duration))  # 無音の波形を生成
+            silent_audio_clip = AudioArrayClip([silence_array], fps=sample_rate)  # 無音のAudioArrayClipを作成
+
+            # 【無音を2つの音声に連結】
+            audio_clip_1 = concatenate_videoclips([audio_clip_1, silent_audio_clip])
+            audio_clip_2 = concatenate_videoclips([audio_clip_2, silent_audio_clip])
+
             # 【前半部分のclip_3を作成】
             # opening_fileのもとの音声とaudio_clip_1を重ねる
             start_time = 4
@@ -56,7 +67,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # 音声ファイルが終了した時点で、opening_fileをカット
             end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
-            clip_3 = video_with_audio_1.subclip(0, end_time+1)
+            clip_3 = video_with_audio_1.subclip(0, end_time)
 
                  
             # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
@@ -94,7 +105,7 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
             clip_4_with_audio = clip_4.set_audio(audio_clip_2)
             end_time_audio_2 = min(audio_clip_2.duration, clip_4_with_audio.duration)
-            clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2 + 1)
+            clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2)
 
             # 【完成版の作成】
             # clip_3とclip_5とending_fileを結合してfinal_combined_videoとする
