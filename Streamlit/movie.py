@@ -58,12 +58,6 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             last_frame = clip_1.get_frame(last_frame_time - 0.01)  # 最後のコマを取得（微調整）
             image_clip = ImageClip(last_frame).set_duration(2)  # 2秒間の静止画として設定
 
-            # 【静止画像にテキストを追加】
-            text = "最後のコマ"
-            text_clip = TextClip(text, fontsize=50, color='white', bg_color='black', size=image_clip.size) \
-                        .set_duration(2) \
-                        .set_position(('center', 'center'))  # テキストを中央に配置
-
             # 画像とテキストを合成
             image_with_text = CompositeAudioClip([image_clip.set_audio(None), text_clip])
 
