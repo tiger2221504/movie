@@ -1,19 +1,13 @@
-import os
 import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip
-
-# スクリプトのディレクトリを取得
-current_dir = os.path.dirname(__file__)
 
 
 # タイトル
 st.title('動画編集アプリ')
 
 # 事前に指定する最初と最後の動画を読み込む
-opening_video_path = os.path.join(current_dir, 'opening.mp4')
-ending_video_path = os.path.join(current_dir, 'ending.mp4')
-predefined_video = VideoFileClip(opening_video_path)
-final_video = VideoFileClip(ending_video_path)
+predefined_video = VideoFileClip('opening.mp4')
+final_video = VideoFileClip('ending.mp4')
 
 # 音声ファイルと動画ファイルをアップロード
 audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
