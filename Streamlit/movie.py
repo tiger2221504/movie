@@ -66,17 +66,20 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
             last_frame_time = clip_1.duration  # 1つ目の動画の最後のフレームの時間
-            last_frame = clip_1.get_frame(last_frame_time - 0.1)  # 最後のコマを取得（微調整）
-            image_clip = ImageClip(last_frame).set_duration(2)  # 2秒間の静止画として設定
+            last_frame = clip_1.get_frame(last_frame_time - 0.01)  # 最後のコマを取得（微調整）
 
-            # 【静止画像にテキストを追加】
+            # PILを使って静止画像にテキストを描画
+            image = Image.fromarray(last_frame)
+            draw = ImageDraw.Draw(image)
+            font = ImageFont.load_default()  # デフォルトフォントを使用
             text = "最後のコマ"
-            text_clip = TextClip(text, fontsize=50, color='white', bg_color='black', size=image_clip.size) \
-                        .set_duration(2) \
-                        .set_position(('center', 'center'))  # テキストを中央に配置
+            text_size = draw.textsize(text, font=font)
+            text_position = ((image.width - text_size[0]) // 2, (image.height - text_size[1]) // 2)
+            draw.text(text_position, text, font=font, fill="white")  # 白いテキストを中央に描画
 
-            # 画像とテキストを合成
-            image_with_text = CompositeAudioClip([image_clip.set_audio(None), text_clip])
+            # PILの画像をImageClipに変換し、2秒間の静止画を作成
+            image_clip = ImageClip(image).set_duration(2)
+
 
             # 【後半部分のclip_5を作成】
             # clip_1とclip_2の間に2秒間のテキスト付き静止画像を挿入し、clip_4とする
