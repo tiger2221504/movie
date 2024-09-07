@@ -46,8 +46,14 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
             
-            # 最初の動画の再生時間の途中で音声1を再生（スタートから5秒後に再生開始）
+             # 動画の長さを取得
+            video_duration = predefined_video.duration
             start_time = 4
+            
+            # 音声1が終了した後に、動画の長さを超えないようにする
+            end_time = min(start_time + audio_clip_1.duration, video_duration)  # 動画の長さを超えないように制限
+            
+            # 音声を動画にセット
             video_with_audio_1 = predefined_video.set_audio(audio_clip_1.set_start(start_time))
 
             # 音声1が終了した後に、アップロードされた1つ目の動画に切り替え
