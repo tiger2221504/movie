@@ -55,9 +55,10 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             video_with_audio_1 = opening_file.set_audio(combined_audio)
 
             # 音声ファイルが終了した時点で、opening_fileをカット
-            end_time = min(start_time + audio_clip_1.duration + 1, opening_file.duration)
-            clip_3 = video_with_audio_1.subclip(0, end_time)
+            end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
+            clip_3 = video_with_audio_1.subclip(0, end_time+1)
 
+                 
             # 【1つ目の動画の最後のフレームを取得して2秒間の静止画を作成】
             last_frame_time = clip_1.duration  # 1つ目の動画の最後のフレームの時間
             last_frame = clip_1.get_frame(last_frame_time - 0.04)  # 最後のコマを取得（微調整）
@@ -92,8 +93,8 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
 
             # clip_4にaudio_clip_2を付け、音声ファイルが終了した時点でclip_4をカット
             clip_4_with_audio = clip_4.set_audio(audio_clip_2)
-            end_time_audio_2 = min(audio_clip_2.duration+1, clip_4_with_audio.duration)
-            clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2)
+            end_time_audio_2 = min(audio_clip_2.duration, clip_4_with_audio.duration)
+            clip_5 = clip_4_with_audio.subclip(0, end_time_audio_2 + 1)
 
             # 【完成版の作成】
             # clip_3とclip_5とending_fileを結合してfinal_combined_videoとする
