@@ -36,11 +36,21 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             tmp_video_1.write(video_file_1.read())
             tmp_video_2.write(video_file_2.read())
 
+            # ファイルの確認
+            st.write(f"音声ファイル1の保存場所: {tmp_audio_1.name}")
+            st.write(f"音声ファイル2の保存場所: {tmp_audio_2.name}")
+            st.write(f"動画ファイル1の保存場所: {tmp_video_1.name}")
+            st.write(f"動画ファイル2の保存場所: {tmp_video_2.name}")
+
             # 一時ファイルから読み込み
             audio_clip_1 = AudioFileClip(tmp_audio_1.name)
             audio_clip_2 = AudioFileClip(tmp_audio_2.name)
             clip_1 = VideoFileClip(tmp_video_1.name)
             clip_2 = VideoFileClip(tmp_video_2.name)
+
+            # ここで動画が正しく読み込まれたか確認
+            st.write(f"動画1の長さ: {clip_1.duration} 秒")
+            st.write(f"動画2の長さ: {clip_2.duration} 秒")
 
             # 【前半部分のclip_3を作成】
             # opening_fileのもとの音声とaudio_clip_1を重ねる
@@ -57,6 +67,12 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             last_frame_time = clip_1.duration  # 1つ目の動画の最後のフレームの時間
             last_frame = clip_1.get_frame(last_frame_time - 0.01)  # 最後のコマを取得（微調整）
             image_clip = ImageClip(last_frame).set_duration(2)  # 2秒間の静止画として設定
+
+            # 【静止画像にテキストを追加】
+            text = "最後のコマ"
+            text_clip = TextClip(text, fontsize=50, color='white', bg_color='black', size=image_clip.size) \
+                        .set_duration(2) \
+                        .set_position(('center', 'center'))  # テキストを中央に配置
 
             # 画像とテキストを合成
             image_with_text = CompositeAudioClip([image_clip.set_audio(None), text_clip])
