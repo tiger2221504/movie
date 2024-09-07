@@ -70,12 +70,19 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             text_bbox = draw.textbbox((0, 0), text, font=font)  # テキストのバウンディングボックスを取得
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]  # 幅と高さを計算
             text_position = ((image.width - text_width) // 2, (image.height - text_height) // 2)
-            draw.text(text_position, text, font=font, fill="white")  # 白いテキストを中央に描画
 
-            # PILの画像をnumpy配列に変換し、ImageClipに変換して2秒間の静止画を作成
+            # 黒い縁取りを追加（8方向に黒いテキストを描画）
+            offset = 3  # 縁取りの幅
+            for dx, dy in [(-offset, 0), (offset, 0), (0, -offset), (0, offset), (-offset, -offset), (offset, offset), (-offset, offset), (offset, -offset)]:
+                draw.text((text_position[0] + dx, text_position[1] + dy), text, font=font, fill="black")
+
+            # 中央に白いテキストを描画
+            draw.text(text_position, text, font=font, fill="white")
+
+            
+            # PILの画像をnumpy配列に変換し、ImageClipに変換して5秒間の静止画を作成
             image_np = np.array(image)  # PIL画像をnumpy配列に変換
-            image_clip = ImageClip(image_np).set_duration(2)
-
+            image_clip = ImageClip(image_np).set_duration(5)
 
             # 【後半部分のclip_5を作成】
             # clip_1とclip_2の間に2秒間のテキスト付き静止画像を挿入し、clip_4とする
