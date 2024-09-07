@@ -14,6 +14,9 @@ font_path = os.path.join(current_dir, 'SOURCEHANSANSJP-BOLD.OTF')
 # タイトル
 st.title('動画編集アプリ')
 
+# 地名の入力
+text = st.text_input("地名を入力してください", value="")
+
 # 事前に指定する最初と最後の動画を読み込む
 opening_video_path = os.path.join(current_dir, 'opening.mp4')
 opening_file = VideoFileClip(opening_video_path)
@@ -66,7 +69,6 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             image = Image.fromarray(last_frame)
             draw = ImageDraw.Draw(image)
             font = ImageFont.truetype(font_path, 90)  # フォントサイズ90
-            text = "最後のコマ"
             text_bbox = draw.textbbox((0, 0), text, font=font)  # テキストのバウンディングボックスを取得
             text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]  # 幅と高さを計算
 
