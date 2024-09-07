@@ -1,7 +1,8 @@
 import os
 import streamlit as st
-from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip, TextClip
+from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip
 import tempfile
+from PIL import Image, ImageDraw, ImageFont
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
