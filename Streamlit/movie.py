@@ -1,26 +1,3 @@
-import os
-import streamlit as st
-from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip
-import tempfile
-
-# スクリプトのディレクトリを取得
-current_dir = os.path.dirname(__file__)
-
-# タイトル
-st.title('動画編集アプリ')
-
-# 事前に指定する最初と最後の動画を読み込む
-opening_video_path = os.path.join(current_dir, 'opening.mp4')
-opening_file = VideoFileClip(opening_video_path)
-ending_video_path = os.path.join(current_dir, 'ending.mp4')
-ending_file = VideoFileClip(ending_video_path)
-
-# 音声ファイルと動画ファイルをアップロード
-audio_file_1 = st.file_uploader("1つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
-audio_file_2 = st.file_uploader("2つ目の音声ファイルをアップロードしてください", type=["mp3", "wav"])
-video_file_1 = st.file_uploader("1つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
-video_file_2 = st.file_uploader("2つ目の動画ファイルをアップロードしてください", type=["mp4", "mov", "avi"])
-
 # アップロードされたファイルが全て存在するかチェック
 if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
     try:
@@ -43,10 +20,11 @@ if audio_file_1 and audio_file_2 and video_file_1 and video_file_2:
             clip_2 = VideoFileClip(tmp_video_2.name)
 
             # 【前半部分のclip_3を作成】
-            # opening_fileの再生から4秒後にaudio_clip_1の再生を始める
+            # opening_fileのもとの音声とaudio_clip_1を重ねる
             start_time = 4
-            new_audio = CompositeAudioClip([audio_clip_1.set_start(start_time)])
-            video_with_audio_1 = opening_file.set_audio(new_audio)
+            original_audio = opening_file.audio  # 元の音声を取得
+            combined_audio = CompositeAudioClip([original_audio, audio_clip_1.set_start(start_time)])
+            video_with_audio_1 = opening_file.set_audio(combined_audio)
 
             # 音声ファイルが終了した時点で、opening_fileをカット
             end_time = min(start_time + audio_clip_1.duration, opening_file.duration)
