@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip
+import tempfile
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
