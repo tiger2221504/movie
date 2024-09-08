@@ -9,8 +9,8 @@ import time
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
 
-# 日本語フォントのパスを指定 (NotoSansCJKjp-Regular.otf などの日本語フォントファイル)
-font_path = os.path.join(current_dir, 'SOURCEHANSANSJP-BOLD.OTF')
+# 日本語フォントのパスを指定 (日本語フォントファイル)
+font_path = os.path.join(current_dir, 'SourceHanSansJP-Bold.otf')
 
 #ページコンフィグ
 st.set_page_config(
