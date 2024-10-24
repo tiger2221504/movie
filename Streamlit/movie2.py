@@ -33,15 +33,13 @@ st.title('まとめ動画作成アプリ')
 # 動画情報を保持するリスト
 videos = []
 
-# 動画のURLを入力するセクション
-st.title("YouTube動画リスト管理アプリ")
-video_url = st.text_input("YouTube動画のURLを入力してください")
-
-# 初期化: session_stateに動画リストがなければ作成
+# session_stateに動画リストと入力欄の値がなければ初期化
 if "videos" not in st.session_state:
     st.session_state.videos = []
+if "video_url" not in st.session_state:
+    st.session_state.video_url = ""
 
-# YouTubeの動画IDを抽出する関数（改良版）
+# YouTubeの動画IDを抽出する関数
 def get_video_id(url):
     # 標準的なyoutube.comやyoutu.beのURL形式に対応
     pattern = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
@@ -59,6 +57,9 @@ def get_video_info(video_id):
         return response.json()["items"][0]
     else:
         return None
+    
+# 動画のURLを入力するセクション
+video_url = st.text_input("YouTube動画のURLを入力してください", value=st.session_state.video_url)
 
 # 動画を追加
 if st.button("動画を追加"):
@@ -85,7 +86,7 @@ if st.session_state.videos:
     for idx, video in enumerate(st.session_state.videos):
         st.write(f"{idx + 1}. {video['title']} | {video['url']}")
         # 削除ボタン
-        if st.button(f"削除 {video['title']}", key=f"delete-{idx}"):
+        if st.button(f"削除"):
             st.session_state.videos.pop(idx)
             st.experimental_rerun()
 
