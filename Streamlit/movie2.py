@@ -7,13 +7,7 @@ import requests
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
 
-# スクリプトのディレクトリを取得
-current_dir = os.path.dirname(__file__)
-
-# 日本語フォントのパスを指定 (NotoSansCJKjp-Regular.otf などの日本語フォントファイル)
-font_path = os.path.join(current_dir, 'SOURCEHANSANSJP-BOLD.OTF')
-
-#ページコンフィグ
+# ページコンフィグ
 st.set_page_config(
      page_title="まとめ動画作成アプリ",
      page_icon="📡",
@@ -22,16 +16,10 @@ st.set_page_config(
          'About': """
          # まとめ動画作成アプリ
          動画を作れます
-         @ 2024
+         @ 2024 yamazumi
          """
      }
- )
-
-# タイトル
-st.title('まとめ動画作成アプリ')
-
-# 動画情報を保持するリスト
-videos = []
+)
 
 # session_stateに動画リストと入力欄の値がなければ初期化
 if "videos" not in st.session_state:
@@ -41,7 +29,6 @@ if "video_url" not in st.session_state:
 
 # YouTubeの動画IDを抽出する関数
 def get_video_id(url):
-    # 標準的なyoutube.comやyoutu.beのURL形式に対応
     pattern = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
     match = re.search(pattern, url)
     if match:
@@ -60,11 +47,10 @@ def get_video_info(video_id):
 
 # 動画URL入力欄をクリアするための関数
 def clear_input():
-    st.session_state["video_url"] = ""
-    st.experimental_rerun()  # 再描画して入力欄をクリア
-    
+    st.session_state.video_url = ""
+
 # 動画のURLを入力するセクション
-video_url = st.text_input("YouTube動画のURLを入力してください", key="video_url")
+st.text_input("YouTube動画のURLを入力してください", key="video_url")
 
 # 動画を追加
 if st.button("動画を追加"):
@@ -81,30 +67,18 @@ if st.button("動画を追加"):
             })
             st.success(f"'{title}' がリストに追加されました。")
             # 入力欄をクリアする
-            clear_input()  # clear_input関数でセッション状態をリセットして再描画
+            st.session_state.video_url = ""  # 直接値をクリアせずに、on_changeの値で対応
+            st.experimental_rerun()
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
         st.error("無効なYouTube URLです。")
-        
+
 # 動画リストの表示
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
     for idx, video in enumerate(st.session_state.videos):
         st.write(f"{idx + 1}. {video['title']} | {video['url']}")
-        # 削除ボタン
-        if st.button(f"{idx + 1}を削除"):
+        if st.button(f"{idx + 1}を削除", key=f"delete-{idx}"):
             st.session_state.videos.pop(idx)
-            st.rerun()
-
-    # 並び替え機能を実装（ドラッグアンドドロップなど）
-
-    # 概要欄を生成
-    if st.button("開始"):
-        st.subheader("生成された概要欄")
-        total_time = 0
-        for idx, video in enumerate(videos):
-            minutes, seconds = divmod(total_time, 60)
-            start_time = f"{minutes}:{seconds:02d}"
-            st.write(f"{start_time} | {video['title']}\n{video['url']}")
-            total_time += video['duration']
+            st.experimental_rerun()
