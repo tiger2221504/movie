@@ -1,11 +1,10 @@
 import os
 import streamlit as st
 from pytube import YouTube
-from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip, ImageClip
-import tempfile
-from PIL import Image, ImageDraw, ImageFont
-import numpy as np
-import time
+import re
+
+# YouTube Data APIキー
+API_KEY = st.YOUTUBE_API_KEY
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
@@ -37,17 +36,43 @@ videos = []
 st.title("YouTube動画リスト管理アプリ")
 video_url = st.text_input("YouTube動画のURLを入力してください")
 
+# YouTubeの動画IDを抽出する関数（改良版）
+def get_video_id(url):
+    # 標準的なyoutube.comやyoutu.beのURL形式に対応
+    pattern = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
+    match = re.search(pattern, url)
+    if match:
+        return match.group(1)
+    else:
+        return None
+
+# 動画情報を取得する関数
+def get_video_info(video_id):
+    url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={video_id}&key={API_KEY}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()["items"][0]
+    else:
+        return None
+
+# 動画を追加
 if st.button("動画を追加"):
-    try:
-        yt = YouTube(video_url)
-        videos.append({
-            "title": yt.title,
-            "url": video_url,
-            "duration": yt.length
-        })
-        st.success(f"動画 '{yt.title}' がリストに追加されました。")
-    except Exception as e:
-        st.error("URLが無効です。正しいYouTube URLを入力してください。")
+    video_id = get_video_id(video_url)
+    if video_id:
+        video_info = get_video_info(video_id)
+        if video_info:
+            title = video_info["snippet"]["title"]
+            duration = video_info["contentDetails"]["duration"]
+            videos.append({
+                "title": title,
+                "url": video_url,
+                "duration": duration
+            })
+            st.success(f"動画 '{title}' がリストに追加されました。")
+        else:
+            st.error("動画情報の取得に失敗しました。")
+    else:
+        st.error("無効なYouTube URLです。")
 
 # 動画リストの表示
 if videos:
