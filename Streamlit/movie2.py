@@ -61,13 +61,14 @@ def get_video_info(video_id):
 # 動画URL入力欄をクリアするための関数
 def clear_input():
     st.session_state["video_url"] = ""
+    st.experimental_rerun()  # 再描画して入力欄をクリア
     
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画のURLを入力してください", key="video_url")
 
 # 動画を追加
 if st.button("動画を追加"):
-    video_id = get_video_id(video_url)
+    video_id = get_video_id(st.session_state.video_url)
     if video_id:
         video_info = get_video_info(video_id)
         if video_info:
@@ -75,17 +76,17 @@ if st.button("動画を追加"):
             duration = video_info["contentDetails"]["duration"]
             st.session_state.videos.append({
                 "title": title,
-                "url": video_url,
+                "url": st.session_state.video_url,
                 "duration": duration
             })
             st.success(f"'{title}' がリストに追加されました。")
-            # 入力欄を空にする
-            st.text_input("YouTube動画のURLを入力してください", key="video_url", value="", on_change=clear_input)
+            # 入力欄をクリアする
+            clear_input()  # clear_input関数でセッション状態をリセットして再描画
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
         st.error("無効なYouTube URLです。")
-
+        
 # 動画リストの表示
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
