@@ -3,7 +3,6 @@ import streamlit as st
 from pytube import YouTube
 import re
 import requests
-from isodate import parse_duration
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -51,18 +50,12 @@ def get_video_info(video_id):
 
 # ISO 8601の期間を時:分:秒に変換する関数
 def convert_duration(iso_duration):
-    duration = parse_duration(iso_duration)
-    total_seconds = int(duration.total_seconds())
-    hours, remainder = divmod(total_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    if hours > 0:
-        return f"{hours}:{minutes:02}:{seconds:02}"
-    else:
-        return f"{minutes}:{seconds:02}"
-
-# 動画URL入力欄をクリアするための関数
-def clear_input():
-    st.session_state.video_url = ""
+    pattern = r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
+    match = re.match(pattern, iso_duration)
+    hours = int(match.group(1)) if match.group(1) else 0
+    minutes = int(match.group(2)) if match.group(2) else 0
+    seconds = int(match.group(3)) if match.group(3) else 0
+    return f"{hours}:{minutes:02}:{seconds:02}"
 
 # 動画のURLを入力するセクション
 st.text_input("YouTube動画のURLを入力してください", key="video_url")
@@ -82,8 +75,8 @@ if st.button("動画を追加"):
                 "duration": readable_duration
             })
             st.success(f"'{title}' ({readable_duration}) がリストに追加されました。")
-            # 入力欄をクリアする
-            clear_input()
+            # 入力欄をクリア
+            st.session_state.video_url = ""  # 動画追加後に入力欄をクリア
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
