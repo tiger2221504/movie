@@ -2,6 +2,7 @@ import os
 import streamlit as st
 from pytube import YouTube
 import re
+import requests
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
