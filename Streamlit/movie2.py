@@ -75,6 +75,8 @@ if st.button("動画を追加"):
                 "duration": duration
             })
             st.success(f"動画 '{title}' がリストに追加されました。")
+            # 入力欄を空にする
+            st.session_state.video_url = ""
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
