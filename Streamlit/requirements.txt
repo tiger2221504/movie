@@ -4,3 +4,4 @@ imageio[ffmpeg]
 gdown
 pytube
 requests
+isodate
