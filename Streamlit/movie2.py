@@ -4,7 +4,7 @@ from pytube import YouTube
 import re
 
 # YouTube Data APIキー
-API_KEY = st.YOUTUBE_API_KEY
+API_KEY = st.secrets[YOUTUBE_API_KEY]
 
 # スクリプトのディレクトリを取得
 current_dir = os.path.dirname(__file__)
