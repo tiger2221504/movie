@@ -21,6 +21,9 @@ st.set_page_config(
      }
 )
 
+# タイトル
+st.title('まとめ動画作成アプリ')
+
 # session_stateに動画リストと入力欄の値がなければ初期化
 if "videos" not in st.session_state:
     st.session_state.videos = []
@@ -47,11 +50,10 @@ def get_video_info(video_id):
 
 # 動画URL入力欄をクリアするための関数
 def clear_input():
-    st.session_state["video_url"] = ""
-    st.experimental_rerun()  # 入力欄をクリアしつつ再描画
+    st.session_state.video_url = ""  # これでインスタンス化後も正常に動作
 
 # 動画のURLを入力するセクション
-st.text_input("YouTube動画のURLを入力してください", key="video_url")
+st.text_input("YouTube動画のURLを入力してください", key="video_url", on_change=clear_input)
 
 # 動画を追加
 if st.button("動画を追加"):
@@ -68,7 +70,7 @@ if st.button("動画を追加"):
             })
             st.success(f"'{title}' がリストに追加されました。")
             # 入力欄をクリアする
-            clear_input()  # 関数を使って入力欄のクリアと再描画
+            st.session_state.video_url = ""  # 動画追加後に入力欄をクリア
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
