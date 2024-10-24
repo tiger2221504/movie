@@ -86,7 +86,7 @@ if st.session_state.videos:
     for idx, video in enumerate(st.session_state.videos):
         st.write(f"{idx + 1}. {video['title']} | {video['url']}")
         # 削除ボタン
-        if st.button(f"削除"):
+        if st.button(f"{idx + 1}を削除"):
             st.session_state.videos.pop(idx)
             st.experimental_rerun()
 
