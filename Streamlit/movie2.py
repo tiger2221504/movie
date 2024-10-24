@@ -61,6 +61,7 @@ def get_video_info(video_id):
 # 動画URL入力欄をクリアするための関数
 def clear_input():
     st.session_state.video_url = ""
+    st.experimental_rerun()  # 再実行して入力欄をクリア
     
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画のURLを入力してください", key="video_url")
