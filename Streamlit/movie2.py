@@ -22,7 +22,7 @@ st.set_page_config(
          'About': """
          # まとめ動画作成アプリ
          動画を作れます
-         @ 2024 yamazumi
+         @ 2024
          """
      }
  )
@@ -59,7 +59,7 @@ def get_video_info(video_id):
         return None
     
 # 動画のURLを入力するセクション
-video_url = st.text_input("YouTube動画のURLを入力してください", value=st.session_state.video_url)
+video_url = st.text_input("YouTube動画のURLを入力してください", key="video_url")
 
 # 動画を追加
 if st.button("動画を追加"):
@@ -74,9 +74,10 @@ if st.button("動画を追加"):
                 "url": video_url,
                 "duration": duration
             })
-            st.success(f"動画 '{title}' がリストに追加されました。")
+            st.success(f"'{title}' がリストに追加されました。")
             # 入力欄を空にする
             st.session_state.video_url = ""
+            st.experimental_rerun()  # 再描画して入力欄をクリア
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
