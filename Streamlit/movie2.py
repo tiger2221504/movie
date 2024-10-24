@@ -37,6 +37,10 @@ videos = []
 st.title("YouTube動画リスト管理アプリ")
 video_url = st.text_input("YouTube動画のURLを入力してください")
 
+# 初期化: session_stateに動画リストがなければ作成
+if "videos" not in st.session_state:
+    st.session_state.videos = []
+
 # YouTubeの動画IDを抽出する関数（改良版）
 def get_video_id(url):
     # 標準的なyoutube.comやyoutu.beのURL形式に対応
@@ -64,7 +68,7 @@ if st.button("動画を追加"):
         if video_info:
             title = video_info["snippet"]["title"]
             duration = video_info["contentDetails"]["duration"]
-            videos.append({
+            st.session_state.videos.append({
                 "title": title,
                 "url": video_url,
                 "duration": duration
@@ -76,13 +80,13 @@ if st.button("動画を追加"):
         st.error("無効なYouTube URLです。")
 
 # 動画リストの表示
-if videos:
+if st.session_state.videos:
     st.subheader("追加された動画リスト")
-    for idx, video in enumerate(videos):
+    for idx, video in enumerate(st.session_state.videos):
         st.write(f"{idx + 1}. {video['title']} | {video['url']}")
         # 削除ボタン
         if st.button(f"削除 {video['title']}", key=f"delete-{idx}"):
-            videos.pop(idx)
+            st.session_state.videos.pop(idx)
             st.experimental_rerun()
 
     # 並び替え機能を実装（ドラッグアンドドロップなど）
