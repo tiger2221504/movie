@@ -3,3 +3,4 @@ moviepy
 imageio[ffmpeg]
 gdown
 pytube
+requests
