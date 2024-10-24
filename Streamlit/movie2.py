@@ -57,6 +57,10 @@ def get_video_info(video_id):
         return response.json()["items"][0]
     else:
         return None
+
+# 動画URL入力欄をクリアするための関数
+def clear_input():
+    st.session_state.video_url = ""
     
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画のURLを入力してください", key="video_url")
@@ -76,8 +80,7 @@ if st.button("動画を追加"):
             })
             st.success(f"'{title}' がリストに追加されました。")
             # 入力欄を空にする
-            st.session_state.video_url = ""
-            st.experimental_rerun()  # 再描画して入力欄をクリア
+            clear_input()
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
