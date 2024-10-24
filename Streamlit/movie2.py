@@ -88,7 +88,7 @@ if st.session_state.videos:
         # 削除ボタン
         if st.button(f"{idx + 1}を削除"):
             st.session_state.videos.pop(idx)
-            st.experimental_rerun()
+            st.rerun()
 
     # 並び替え機能を実装（ドラッグアンドドロップなど）
 
