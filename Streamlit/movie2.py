@@ -214,7 +214,7 @@ if st.session_state.videos:
                 published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
                 
                 # 動画クリップを1280x720にリサイズ
-                clip = VideoFileClip("temp_video.mp4").resize((1280, 720), Image.LANCZOS)
+                clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
                 
                 # 公開日をテキストクリップとして生成し、動画の左上に配置
                 text = TextClip(
@@ -223,12 +223,11 @@ if st.session_state.videos:
                     color="white",
                     font="Arial"
                 ).set_position(("left", 10)).set_duration(clip.duration)
-                
-                # テキストクリップと動画クリップを重ねる
-                clip = clip.set_duration(clip.duration)
-                composite = VideoFileClip("temp_video.mp4").resize((1280, 720))
-                composite = composite.set_duration(clip.duration).set_position("center")
-                combined = concatenate_videoclips([clip, composite])
+
+                # テキストクリップをオーバーレイ
+                composite = clip.set_duration(clip.duration)
+                combined = composite.set_position("center").set_duration(clip.duration)
+                combined = concatenate_videoclips([text.set_start(0), combined])
                 
                 # クリップをリストに追加
                 clips.append(combined)
