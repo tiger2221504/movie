@@ -17,7 +17,6 @@ st.set_page_config(
          'About': """
          # まとめ動画作成アプリ
          動画を作れます
-         @ 2024 yamazumi
          """
      }
 )
@@ -146,7 +145,7 @@ if st.session_state.videos:
     if st.button("作成開始"):
         description_text = ""
         for video in st.session_state.videos:
-            description_text += f"{video['duration']} | {video['title']} ({video['publish_date']}公開)\n{video['url']}\n\n"
+            description_text += f"{video['duration']} | {video['title']} \n{video['url']}\n\n"
         
         st.subheader("生成されたYouTube概要欄")
         st.text_area("概要欄の内容", description_text, height=300)
