@@ -5,4 +5,4 @@ gdown
 pytube
 requests
 isodate
-youtube_dl
+yt_dlp
