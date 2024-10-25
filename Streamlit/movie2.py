@@ -1,13 +1,13 @@
 import os
 import streamlit as st
 from pytube import YouTube
-from pytube.exceptions import VideoUnavailable
 from yt_dlp import YoutubeDL
 import re
 import requests
 from datetime import datetime, timedelta
 from moviepy.editor import VideoFileClip, TextClip, concatenate_videoclips
 from PIL import Image
+import subprocess
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -98,6 +98,15 @@ def download_video(url, filename="temp_video.mp4"):
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
     return info
+
+# 動画をリサイズする関数
+def resize_video_ffmpeg(input_path, output_path, width=1280, height=720):
+    """ffmpegで動画を指定の解像度にリサイズ"""
+    command = [
+        "ffmpeg", "-i", input_path, "-vf", f"scale={width}:{height}", 
+        "-c:a", "copy", output_path
+    ]
+    subprocess.run(command, check=True)
 
 
 
@@ -209,12 +218,12 @@ if st.session_state.videos:
         for video in st.session_state.videos:
             try:
                 # 動画をYouTubeからダウンロード
-                info = download_video(video["url"], filename="temp_video.mp4")
-                title = info.get("title", "Untitled")
-                published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
+                download_video(video["url"], filename="temp_video.mp4")
+                resized_path = "resized_video.mp4"
+                resize_video_ffmpeg("temp_video.mp4", resized_path)
                 
                 # 動画クリップを1280x720にリサイズ
-                clip = VideoFileClip("temp_video.mp4").resize((1280, 720), method="ffmpeg")
+                clip = VideoFileClip(resized_path)
                 
                 # 公開日をテキストクリップとして生成し、動画の左上に配置
                 text = TextClip(
@@ -225,15 +234,12 @@ if st.session_state.videos:
                 ).set_position(("left", 10)).set_duration(clip.duration)
 
                 # テキストクリップをオーバーレイ
-                composite = clip.set_duration(clip.duration)
-                combined = composite.set_position("center").set_duration(clip.duration)
-                combined = concatenate_videoclips([text.set_start(0), combined])
+                combined = concatenate_videoclips([text.set_start(0), clip])
+                clips.append(combined)
                 
                 # クリップをリストに追加
                 clips.append(combined)
 
-            except VideoUnavailable:
-                st.warning(f"{video['title']}はダウンロードできません。スキップします。")
             except Exception as e:
                 st.warning(f"{video['title']}の処理中にエラーが発生しました: \n{e}")
             
@@ -253,7 +259,3 @@ if st.session_state.videos:
         else:
             progress_bar.progress(100)  # プログレスバーを更新
             st.error("利用可能な動画がありませんでした。")
-        
-
-        
-        
