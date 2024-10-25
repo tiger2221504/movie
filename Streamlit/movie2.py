@@ -85,9 +85,6 @@ def format_date(iso_date):
     date_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
     return date_obj.strftime("%Y/%m/%d")
 
-
-
-
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画または再生リストのURLを入力してください")
 
@@ -103,11 +100,12 @@ if st.button("動画を追加"):
             if video_info:
                 title = video_info["snippet"]["title"]
                 duration = parse_duration(video_info["contentDetails"]["duration"])
-                readable_duration = convert_duration(duration)
+                publish_date = format_date(video_info["snippet"].get("publishedAt", "1970-01-01T00:00:00Z"))
                 st.session_state.videos.append({
                     "title": title,
                     "url": f"https://www.youtube.com/watch?v={video_id}",
-                    "duration": readable_duration
+                    "duration": duration,
+                    "publish_date": publish_date
                 })
         st.success("再生リストの動画がすべて追加されました。")
     
@@ -119,13 +117,14 @@ if st.button("動画を追加"):
             if video_info:
                 title = video_info["snippet"]["title"]
                 duration = parse_duration(video_info["contentDetails"]["duration"])
-                readable_duration = convert_duration(duration)
+                publish_date = format_date(video_info["snippet"].get("publishedAt", "1970-01-01T00:00:00Z"))
                 st.session_state.videos.append({
                     "title": title,
                     "url": video_url,
-                    "duration": readable_duration
+                    "duration": duration,
+                    "publish_date": publish_date
                 })
-                st.success(f"'{title}' ({readable_duration}) がリストに追加されました。")
+                st.success(f"'{title}' がリストに追加されました。")
             else:
                 st.error("動画情報の取得に失敗しました。")
         else:
@@ -135,20 +134,18 @@ if st.button("動画を追加"):
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
     for idx, video in enumerate(st.session_state.videos):
-        st.write(f"{idx + 1}. {video['title']} | {video['duration']} | {video['url']}")
+        st.write(f"{idx + 1}. {video['title']} | {str(video['duration'])} | {video['url']}")
         if st.button(f"{idx + 1}を削除", key=f"delete-{idx}"):
             st.session_state.videos.pop(idx)
-            # 再描画を強制
-            st.experimental_set_query_params()
+            st.experimental_rerun()
 
-
-   # 生成開始
+    # YouTube概要欄生成機能
     if st.button("作成開始"):
         description_text = ""
-        total_duration = timedelta()
+        total_duration = timedelta()  # 累積再生時間
         for video in st.session_state.videos:
             description_text += f"{str(total_duration)} | {video['title']} \n{video['url']}\n\n"
             total_duration += video['duration']
         
         st.subheader("生成されたYouTube概要欄")
-        st.text_area("概要欄の内容", description_text, height=300)
+        st.text_area("概要欄の内容", description_text, height=300)  # コピー可能
