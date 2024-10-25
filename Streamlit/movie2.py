@@ -71,7 +71,7 @@ def get_playlist_video_ids(playlist_id):
             break
     return video_ids
 
-# ISO 8601の期間を時:分:秒に変換する関数
+# ISO 8601の期間をtimedeltaに変換する関数
 def parse_duration(iso_duration):
     pattern = r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
     match = re.match(pattern, iso_duration)
@@ -144,7 +144,9 @@ if st.session_state.videos:
         description_text = ""
         total_duration = timedelta()  # 累積再生時間
         for video in st.session_state.videos:
-            description_text += f"{str(total_duration)} | {video['title']} \n{video['url']}\n\n"
+            # total_durationを表示用に時:分:秒に変換
+            start_time = str(total_duration)
+            description_text += f"{start_time} | {video['title']} ({video['publish_date']}公開)\n{video['url']}\n\n"
             total_duration += video['duration']
         
         st.subheader("生成されたYouTube概要欄")
