@@ -6,3 +6,4 @@ pytube
 requests
 isodate
 yt_dlp
+Pillow==9.0.0
