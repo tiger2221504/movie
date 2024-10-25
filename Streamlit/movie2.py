@@ -1,9 +1,8 @@
 import os
 import streamlit as st
-from pytube import YouTube
 import re
 import requests
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -17,7 +16,6 @@ st.set_page_config(
          'About': """
          # まとめ動画作成アプリ
          動画を作れます
-         @ 2024 yamazumi
          """
      }
 )
@@ -71,14 +69,18 @@ def get_playlist_video_ids(playlist_id):
             break
     return video_ids
 
-# ISO 8601の期間をtimedeltaに変換する関数
-def parse_duration(iso_duration):
+# ISO 8601の期間を秒単位に変換する関数
+def parse_duration_to_seconds(iso_duration):
     pattern = r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
     match = re.match(pattern, iso_duration)
     hours = int(match.group(1)) if match.group(1) else 0
     minutes = int(match.group(2)) if match.group(2) else 0
     seconds = int(match.group(3)) if match.group(3) else 0
-    return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    return hours * 3600 + minutes * 60 + seconds
+
+# 秒を「時:分:秒」形式に変換する関数
+def format_seconds(seconds):
+    return str(timedelta(seconds=seconds))
 
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画または再生リストのURLを入力してください")
@@ -94,7 +96,7 @@ if st.button("動画を追加"):
             video_info = get_video_info(video_id)
             if video_info:
                 title = video_info["snippet"]["title"]
-                duration = parse_duration(video_info["contentDetails"]["duration"])
+                duration = parse_duration_to_seconds(video_info["contentDetails"]["duration"])
                 st.session_state.videos.append({
                     "title": title,
                     "url": f"https://www.youtube.com/watch?v={video_id}",
@@ -109,7 +111,7 @@ if st.button("動画を追加"):
             video_info = get_video_info(video_id)
             if video_info:
                 title = video_info["snippet"]["title"]
-                duration = parse_duration(video_info["contentDetails"]["duration"])
+                duration = parse_duration_to_seconds(video_info["contentDetails"]["duration"])
                 st.session_state.videos.append({
                     "title": title,
                     "url": video_url,
@@ -125,7 +127,8 @@ if st.button("動画を追加"):
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
     for idx, video in enumerate(st.session_state.videos):
-        st.write(f"{idx + 1}. {video['title']} | {str(video['duration'])} | {video['url']}")
+        duration_str = format_seconds(video['duration'])
+        st.write(f"{idx + 1}. {video['title']} | {duration_str} | {video['url']}")
         if st.button(f"{idx + 1}を削除", key=f"delete-{idx}"):
             st.session_state.videos.pop(idx)
             st.experimental_rerun()
@@ -133,9 +136,9 @@ if st.session_state.videos:
     # YouTube概要欄生成機能
     if st.button("作成開始"):
         description_text = ""
-        total_duration = timedelta()  # 累積再生時間
+        total_duration = 0  # 累積再生時間（秒）
         for video in st.session_state.videos:
-            start_time = str(total_duration)
+            start_time = format_seconds(total_duration)
             description_text += f"{start_time} | {video['title']}\n{video['url']}\n\n"
             total_duration += video['duration']
         
