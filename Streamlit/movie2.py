@@ -72,13 +72,13 @@ def get_playlist_video_ids(playlist_id):
     return video_ids
 
 # ISO 8601の期間を時:分:秒に変換する関数
-def convert_duration(iso_duration):
+def parse_duration(iso_duration):
     pattern = r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
     match = re.match(pattern, iso_duration)
     hours = int(match.group(1)) if match.group(1) else 0
     minutes = int(match.group(2)) if match.group(2) else 0
     seconds = int(match.group(3)) if match.group(3) else 0
-    return f"{hours}:{minutes:02}:{seconds:02}"
+    return timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
 # 日付フォーマットを変換する関数
 def format_date(iso_date):
@@ -102,7 +102,7 @@ if st.button("動画を追加"):
             video_info = get_video_info(video_id)
             if video_info:
                 title = video_info["snippet"]["title"]
-                duration = video_info["contentDetails"]["duration"]
+                duration = parse_duration(video_info["contentDetails"]["duration"])
                 readable_duration = convert_duration(duration)
                 st.session_state.videos.append({
                     "title": title,
@@ -118,7 +118,7 @@ if st.button("動画を追加"):
             video_info = get_video_info(video_id)
             if video_info:
                 title = video_info["snippet"]["title"]
-                duration = video_info["contentDetails"]["duration"]
+                duration = parse_duration(video_info["contentDetails"]["duration"])
                 readable_duration = convert_duration(duration)
                 st.session_state.videos.append({
                     "title": title,
