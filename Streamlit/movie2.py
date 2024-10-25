@@ -3,7 +3,7 @@ import streamlit as st
 from pytube import YouTube
 import re
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -145,14 +145,18 @@ if st.session_state.videos:
     if st.button("作成開始"):
         # 概要欄文章の生成
         description_text = ""
+        cumulative_time = timedelta()
         for video in st.session_state.videos:
-            description_text += f"{video['duration']} | {video['title']} \n{video['url']}\n\n"
+            description_text += f"{str(cumulative_time)} | {video['title']} \n{video['url']}\n\n"
+            cumulative_time += video["duration"]
         
         st.subheader("YouTube概要欄")
+
+
         st.text_area("概要欄の内容", description_text, height=300)
         # JavaScriptを使ってクリップボードにコピーするボタンを作成
         copy_button = """
-        <button onclick="copyText()">コピー</button>
+        <button onclick="copyText()">クリップボードにコピー</button>
         <p id="copy-message" style="color:green; display:none;">☑コピーしました</p>
 
         <script>
@@ -174,6 +178,7 @@ if st.session_state.videos:
             """,
             height=100,
         )
+
 
 
         # まとめ動画の作成
