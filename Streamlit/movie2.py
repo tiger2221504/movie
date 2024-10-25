@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from pytube import YouTube
+from pytube.exceptions import VideoUnavailable
 import re
 import requests
 from datetime import datetime, timedelta
@@ -231,40 +232,54 @@ if st.session_state.videos:
         clips = []
         progress_bar = st.progress(0)  # プログレスバーの初期値
         for video in st.session_state.videos:
-            # 動画をYouTubeからダウンロード
-            yt = YouTube(video["url"])
-            stream = yt.streams.filter(file_extension="mp4", resolution="720p").first()
-            stream.download(filename="temp_video.mp4")
+            try:
+                # 動画をYouTubeからダウンロード
+                yt = YouTube(video["url"])
+                stream = yt.streams.filter(file_extension="mp4", resolution="720p").first()
+                stream.download(filename="temp_video.mp4")
+                
+                # 動画クリップを1280x720にリサイズ
+                clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
+                
+                # 公開日をテキストクリップとして生成し、動画の左上に配置
+                text = TextClip(
+                    video["published_date"],
+                    fontsize=90,
+                    color="white",
+                    font="Arial"
+                ).set_position(("left", 10)).set_duration(clip.duration)
+                
+                # テキストクリップと動画クリップを重ねる
+                clip = clip.set_duration(clip.duration)
+                composite = VideoFileClip("temp_video.mp4").resize((1280, 720))
+                composite = composite.set_duration(clip.duration).set_position("center")
+                combined = concatenate_videoclips([clip, composite])
+                
+                # クリップをリストに追加
+                clips.append(combined)
+
+            except VideoUnavailable:
+                st.warning(f"{video['title']}はダウンロードできません。スキップします。")
+            except Exception as e:
+                st.warning(f"{video['title']}の処理中にエラーが発生しました: \n{e}")
             
-            # 動画クリップを1280x720にリサイズ
-            clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
-            
-            # 公開日をテキストクリップとして生成し、動画の左上に配置
-            text = TextClip(
-                video["published_date"],
-                fontsize=90,
-                color="white",
-                font="Arial"
-            ).set_position(("left", 10)).set_duration(clip.duration)
-            
-            # テキストクリップと動画クリップを重ねる
-            clip = clip.set_duration(clip.duration)
-            composite = VideoFileClip("temp_video.mp4").resize((1280, 720))
-            composite = composite.set_duration(clip.duration).set_position("center")
-            combined = concatenate_videoclips([clip, composite])
-            
-            # クリップをリストに追加
-            clips.append(combined)
-            
-            # 一時ファイルを削除
-            os.remove("temp_video.mp4")
+            finally:
+                if os.path.exists("temp_video.mp4"):
+                    # 一時ファイルを削除
+                    os.remove("temp_video.mp4")
 
             progress_bar.progress(int(100/(len(st.session_state.videos)+1)))  # プログレスバーを更新
         
         # すべての動画クリップを結合
-        final_clip = concatenate_videoclips(clips, method="compose")
-        final_clip.write_videofile("summary_video.mp4", codec="libx264")
-        progress_bar.progress(100)  # プログレスバーを更新
+        if clips:
+            final_clip = concatenate_videoclips(clips, method="compose")
+            final_clip.write_videofile("summary_video.mp4", codec="libx264")
+            progress_bar.progress(100)  # プログレスバーを更新
+            st.video("summary_video.mp4")
+        else:
+            progress_bar.progress(100)  # プログレスバーを更新
+            st.error("利用可能な動画がありませんでした。")
+        
 
-        st.video("summary_video.mp4")
+        
         
