@@ -91,14 +91,13 @@ def format_date(iso_date):
 # 動画をDLする関数
 def download_video(url, filename="temp_video.mp4"):
     ydl_opts = {
-        'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',  # 720p以下の最高画質を取得
+        'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',  # 720p以下の最高画質で取得
         'outtmpl': filename,
         'quiet': True,
         'merge_output_format': 'mp4'
     }
     with YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=True)
-    return info
+        ydl.download([url])
 
 
 
@@ -211,14 +210,7 @@ if st.session_state.videos:
             try:
                 # 動画をYouTubeからダウンロード
                 info = download_video(video["url"], filename="temp_video.mp4")
-                title = info.get("title", "Untitled")
-                published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
-                
-                # 動画クリップを読み込む（720pに固定されている）
-                clip = VideoFileClip("temp_video.mp4")
-                
-                # クリップをリストに追加
-                clips.append(clip)
+                st.video("temp_video.mp4")
 
             except Exception as e:
                 st.warning(f"{video['title']}の処理中にエラーが発生しました: \n{e}")
