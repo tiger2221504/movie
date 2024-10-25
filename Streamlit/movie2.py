@@ -4,6 +4,7 @@ from pytube import YouTube
 import re
 import requests
 from datetime import datetime, timedelta
+from moviepy.editor import VideoFileClip, TextClip, concatenate_videoclips
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -83,6 +84,44 @@ def convert_duration(iso_duration):
 def format_date(iso_date):
     date_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
     return date_obj.strftime("%Y/%m/%d")
+
+# 動画のリストを1本にまとめる関数
+def create_summary_video(videos):
+    clips = []
+    for video in videos:
+        # 動画をYouTubeからダウンロード
+        yt = YouTube(video["url"])
+        stream = yt.streams.filter(file_extension="mp4", resolution="720p").first()
+        stream.download(filename="temp_video.mp4")
+        
+        # 動画クリップを1280x720にリサイズ
+        clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
+        
+        # 公開日をテキストクリップとして生成し、動画の左上に配置
+        text = TextClip(
+            video["published_date"],
+            fontsize=90,
+            color="white",
+            font="Arial"
+        ).set_position(("left", 10)).set_duration(clip.duration)
+        
+        # テキストクリップと動画クリップを重ねる
+        clip = clip.set_duration(clip.duration)
+        composite = VideoFileClip("temp_video.mp4").resize((1280, 720))
+        composite = composite.set_duration(clip.duration).set_position("center")
+        combined = concatenate_videoclips([clip, composite])
+        
+        # クリップをリストに追加
+        clips.append(combined)
+        
+        # 一時ファイルを削除
+        os.remove("temp_video.mp4")
+    
+    # すべての動画クリップを結合
+    final_clip = concatenate_videoclips(clips, method="compose")
+    final_clip.write_videofile("summary_video.mp4", codec="libx264")
+    
+    return "summary_video.mp4"
 
 
 
@@ -189,5 +228,43 @@ if st.session_state.videos:
 
         # まとめ動画の作成
         st.subheader("動画の出力")
-            # プログレスバーも表示させる
-            # 出力が完了したら完成した動画を表示
+        clips = []
+        progress_bar = st.progress(0)  # プログレスバーの初期値
+        for video in st.session_state.videos:
+            # 動画をYouTubeからダウンロード
+            yt = YouTube(video["url"])
+            stream = yt.streams.filter(file_extension="mp4", resolution="720p").first()
+            stream.download(filename="temp_video.mp4")
+            
+            # 動画クリップを1280x720にリサイズ
+            clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
+            
+            # 公開日をテキストクリップとして生成し、動画の左上に配置
+            text = TextClip(
+                video["published_date"],
+                fontsize=90,
+                color="white",
+                font="Arial"
+            ).set_position(("left", 10)).set_duration(clip.duration)
+            
+            # テキストクリップと動画クリップを重ねる
+            clip = clip.set_duration(clip.duration)
+            composite = VideoFileClip("temp_video.mp4").resize((1280, 720))
+            composite = composite.set_duration(clip.duration).set_position("center")
+            combined = concatenate_videoclips([clip, composite])
+            
+            # クリップをリストに追加
+            clips.append(combined)
+            
+            # 一時ファイルを削除
+            os.remove("temp_video.mp4")
+
+            progress_bar.progress(int(100/(len(st.session_state.videos)+1)))  # プログレスバーを更新
+        
+        # すべての動画クリップを結合
+        final_clip = concatenate_videoclips(clips, method="compose")
+        final_clip.write_videofile("summary_video.mp4", codec="libx264")
+        progress_bar.progress(100)  # プログレスバーを更新
+
+        st.video("summary_video.mp4")
+        
