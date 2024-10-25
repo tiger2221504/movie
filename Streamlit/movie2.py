@@ -37,6 +37,15 @@ def get_video_id(url):
     else:
         return None
 
+# 再生リストIDを抽出する関数
+def get_playlist_id(url):
+    pattern = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/playlist\?list=)([a-zA-Z0-9_-]+)"
+    match = re.search(pattern, url)
+    if match:
+        return match.group(1)
+    else:
+        return None
+
 # 動画情報を取得する関数
 def get_video_info(video_id):
     url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={video_id}&key={API_KEY}"
@@ -45,6 +54,21 @@ def get_video_info(video_id):
         return response.json()["items"][0]
     else:
         return None
+
+# 再生リストの動画IDをすべて取得する関数
+def get_playlist_video_ids(playlist_id):
+    video_ids = []
+    url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId={playlist_id}&maxResults=50&key={API_KEY}"
+    while url:
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            video_ids.extend([item["contentDetails"]["videoId"] for item in data["items"]])
+            url = f"https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&pageToken={data.get('nextPageToken')}&playlistId={playlist_id}&maxResults=50&key={API_KEY}" if "nextPageToken" in data else None
+        else:
+            st.error("再生リストの動画情報の取得に失敗しました。")
+            break
+    return video_ids
 
 # ISO 8601の期間を時:分:秒に変換する関数
 def convert_duration(iso_duration):
@@ -56,27 +80,47 @@ def convert_duration(iso_duration):
     return f"{hours}:{minutes:02}:{seconds:02}"
 
 # 動画のURLを入力するセクション
-video_url = st.text_input("YouTube動画のURLを入力してください")
+video_url = st.text_input("YouTube動画または再生リストのURLを入力してください")
 
 # 動画を追加
 if st.button("動画を追加"):
-    video_id = get_video_id(video_url)
-    if video_id:
-        video_info = get_video_info(video_id)
-        if video_info:
-            title = video_info["snippet"]["title"]
-            duration = video_info["contentDetails"]["duration"]
-            readable_duration = convert_duration(duration)
-            st.session_state.videos.append({
-                "title": title,
-                "url": video_url,
-                "duration": readable_duration
-            })
-            st.success(f"'{title}' ({readable_duration}) がリストに追加されました。")
-        else:
-            st.error("動画情報の取得に失敗しました。")
+    # 再生リストIDをチェック
+    playlist_id = get_playlist_id(video_url)
+    if playlist_id:
+        # 再生リストの動画IDリストを取得
+        video_ids = get_playlist_video_ids(playlist_id)
+        for video_id in video_ids:
+            video_info = get_video_info(video_id)
+            if video_info:
+                title = video_info["snippet"]["title"]
+                duration = video_info["contentDetails"]["duration"]
+                readable_duration = convert_duration(duration)
+                st.session_state.videos.append({
+                    "title": title,
+                    "url": f"https://www.youtube.com/watch?v={video_id}",
+                    "duration": readable_duration
+                })
+        st.success("再生リストの動画がすべて追加されました。")
+    
     else:
-        st.error("無効なYouTube URLです。")
+        # 単一動画の処理
+        video_id = get_video_id(video_url)
+        if video_id:
+            video_info = get_video_info(video_id)
+            if video_info:
+                title = video_info["snippet"]["title"]
+                duration = video_info["contentDetails"]["duration"]
+                readable_duration = convert_duration(duration)
+                st.session_state.videos.append({
+                    "title": title,
+                    "url": video_url,
+                    "duration": readable_duration
+                })
+                st.success(f"'{title}' ({readable_duration}) がリストに追加されました。")
+            else:
+                st.error("動画情報の取得に失敗しました。")
+        else:
+            st.error("無効なYouTube URLです。")
 
 # 動画リストの表示と削除機能
 if st.session_state.videos:
