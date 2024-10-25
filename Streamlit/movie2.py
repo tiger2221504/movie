@@ -85,4 +85,5 @@ if st.session_state.videos:
         st.write(f"{idx + 1}. {video['title']} | {video['duration']} | {video['url']}")
         if st.button(f"{idx + 1}を削除", key=f"delete-{idx}"):
             st.session_state.videos.pop(idx)
-            st.experimental_rerun()
+            # 再描画を強制
+            st.experimental_set_query_params()
