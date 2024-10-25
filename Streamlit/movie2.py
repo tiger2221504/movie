@@ -91,22 +91,14 @@ def format_date(iso_date):
 # 動画をDLする関数
 def download_video(url, filename="temp_video.mp4"):
     ydl_opts = {
-        'format': 'best[height<=720]',  # 720p以下の最高画質を取得
+        'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',  # 720p以下の最高画質を取得
         'outtmpl': filename,
-        'quiet': True
+        'quiet': True,
+        'merge_output_format': 'mp4'
     }
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
     return info
-
-# 動画をリサイズする関数
-def resize_video_ffmpeg(input_path, output_path, width=1280, height=720):
-    """ffmpegで動画を指定の解像度にリサイズ"""
-    command = [
-        "ffmpeg", "-i", input_path, "-vf", f"scale={width}:{height}", 
-        "-c:a", "copy", output_path
-    ]
-    subprocess.run(command, check=True)
 
 
 
@@ -218,12 +210,12 @@ if st.session_state.videos:
         for video in st.session_state.videos:
             try:
                 # 動画をYouTubeからダウンロード
-                download_video(video["url"], filename="temp_video.mp4")
-                resized_path = "resized_video.mp4"
-                resize_video_ffmpeg("temp_video.mp4", resized_path)
+                info = download_video(video["url"], filename="temp_video.mp4")
+                title = info.get("title", "Untitled")
+                published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
                 
-                # 動画クリップを1280x720にリサイズ
-                clip = VideoFileClip(resized_path)
+                # 動画クリップを読み込む（720pに固定されている）
+                clip = VideoFileClip("temp_video.mp4")
                 
                 # 公開日をテキストクリップとして生成し、動画の左上に配置
                 text = TextClip(
@@ -259,3 +251,7 @@ if st.session_state.videos:
         else:
             progress_bar.progress(100)  # プログレスバーを更新
             st.error("利用可能な動画がありませんでした。")
+        
+
+        
+        
