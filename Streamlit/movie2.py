@@ -103,10 +103,13 @@ if st.button("動画を追加"):
                 title = video_info["snippet"]["title"]
                 duration = video_info["contentDetails"]["duration"]
                 delta_duration = convert_duration(duration)
+                published_at = video_info["snippet"]["publishedAt"]
+                formatted_date = format_date(published_at)  # 日付を読みやすい形式に変換
                 st.session_state.videos.append({
                     "title": title,
                     "url": f"https://www.youtube.com/watch?v={video_id}",
-                    "duration": delta_duration
+                    "duration": delta_duration,
+                    "published_date": formatted_date
                 })
         st.success("再生リストの動画がすべて追加されました。")
     
@@ -119,10 +122,13 @@ if st.button("動画を追加"):
                 title = video_info["snippet"]["title"]
                 duration = video_info["contentDetails"]["duration"]
                 delta_duration = convert_duration(duration)
+                published_at = video_info["snippet"]["publishedAt"]
+                formatted_date = format_date(published_at)  # 日付を読みやすい形式に変換
                 st.session_state.videos.append({
                     "title": title,
                     "url": video_url,
-                    "duration": delta_duration
+                    "duration": delta_duration,
+                    "published_date": formatted_date
                 })
                 st.success(f"'{title}' ({delta_duration}) がリストに追加されました。")
             else:
@@ -134,7 +140,7 @@ if st.button("動画を追加"):
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
     for idx, video in enumerate(st.session_state.videos):
-        st.write(f"{idx + 1}. {video['title']} | {video['duration']} | {video['url']}")
+        st.write(f"{idx + 1}. {video['title']} ({video['duration']}) | {video['url']}")
         if st.button(f"{idx + 1}を削除", key=f"delete-{idx}"):
             st.session_state.videos.pop(idx)
             # 再描画を強制
@@ -185,5 +191,3 @@ if st.session_state.videos:
         st.subheader("動画の出力")
             # プログレスバーも表示させる
             # 出力が完了したら完成した動画を表示
-
-#☑
