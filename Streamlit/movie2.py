@@ -80,33 +80,17 @@ if st.button("動画を追加"):
     else:
         st.error("無効なYouTube URLです。")
 
-# 動画リストの表示と削除・順序変更機能
+# 動画リストの表示と削除機能
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
     for idx, video in enumerate(st.session_state.videos):
-        col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+        col1, col2 = st.columns([4, 1])
 
         with col1:
             st.write(f"{idx + 1}. {video['title']} | {video['duration']} | {video['url']}")
 
-        # 「上へ」ボタン
-        if idx > 0:  # 1番目以外に表示
-            with col2:
-                if st.button("上へ", key=f"move-up-{idx}"):
-                    # 現在の要素と1つ上の要素を入れ替え
-                    st.session_state.videos[idx], st.session_state.videos[idx - 1] = st.session_state.videos[idx - 1], st.session_state.videos[idx]
-                    st.session_state.rerun = not st.session_state.rerun  # 再描画を強制
-
-        # 「下へ」ボタン
-        if idx < len(st.session_state.videos) - 1:  # 最後の要素以外に表示
-            with col3:
-                if st.button("下へ", key=f"move-down-{idx}"):
-                    # 現在の要素と1つ下の要素を入れ替え
-                    st.session_state.videos[idx], st.session_state.videos[idx + 1] = st.session_state.videos[idx + 1], st.session_state.videos[idx]
-                    st.session_state.rerun = not st.session_state.rerun  # 再描画を強制
-
         # 削除ボタン
-        with col4:
+        with col2:
             if st.button("削除", key=f"delete-{idx}"):
                 st.session_state.videos.pop(idx)
-                st.session_state.rerun = not st.session_state.rerun  # 再描画を強制
+                st.experimental_rerun()  # 削除後に再描画
