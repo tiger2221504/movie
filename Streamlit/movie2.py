@@ -70,7 +70,7 @@ def get_playlist_video_ids(playlist_id):
             break
     return video_ids
 
-# ISO 8601の期間を時:分:秒に変換する関数
+# ISO 8601の期間をtimedeltaに変換する関数
 def convert_duration(iso_duration):
     pattern = r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
     match = re.match(pattern, iso_duration)
@@ -102,11 +102,11 @@ if st.button("動画を追加"):
             if video_info:
                 title = video_info["snippet"]["title"]
                 duration = video_info["contentDetails"]["duration"]
-                readable_duration = convert_duration(duration)
+                delta_duration = convert_duration(duration)
                 st.session_state.videos.append({
                     "title": title,
                     "url": f"https://www.youtube.com/watch?v={video_id}",
-                    "duration": readable_duration
+                    "duration": delta_duration
                 })
         st.success("再生リストの動画がすべて追加されました。")
     
@@ -118,13 +118,13 @@ if st.button("動画を追加"):
             if video_info:
                 title = video_info["snippet"]["title"]
                 duration = video_info["contentDetails"]["duration"]
-                readable_duration = convert_duration(duration)
+                delta_duration = convert_duration(duration)
                 st.session_state.videos.append({
                     "title": title,
                     "url": video_url,
-                    "duration": readable_duration
+                    "duration": delta_duration
                 })
-                st.success(f"'{title}' ({readable_duration}) がリストに追加されました。")
+                st.success(f"'{title}' ({delta_duration}) がリストに追加されました。")
             else:
                 st.error("動画情報の取得に失敗しました。")
         else:
