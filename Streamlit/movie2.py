@@ -80,11 +80,6 @@ def parse_duration(iso_duration):
     seconds = int(match.group(3)) if match.group(3) else 0
     return timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
-# 日付フォーマットを変換する関数
-def format_date(iso_date):
-    date_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
-    return date_obj.strftime("%Y/%m/%d")
-
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画または再生リストのURLを入力してください")
 
@@ -100,12 +95,10 @@ if st.button("動画を追加"):
             if video_info:
                 title = video_info["snippet"]["title"]
                 duration = parse_duration(video_info["contentDetails"]["duration"])
-                publish_date = format_date(video_info["snippet"].get("publishedAt", "1970-01-01T00:00:00Z"))
                 st.session_state.videos.append({
                     "title": title,
                     "url": f"https://www.youtube.com/watch?v={video_id}",
-                    "duration": duration,
-                    "publish_date": publish_date
+                    "duration": duration
                 })
         st.success("再生リストの動画がすべて追加されました。")
     
@@ -117,12 +110,10 @@ if st.button("動画を追加"):
             if video_info:
                 title = video_info["snippet"]["title"]
                 duration = parse_duration(video_info["contentDetails"]["duration"])
-                publish_date = format_date(video_info["snippet"].get("publishedAt", "1970-01-01T00:00:00Z"))
                 st.session_state.videos.append({
                     "title": title,
                     "url": video_url,
-                    "duration": duration,
-                    "publish_date": publish_date
+                    "duration": duration
                 })
                 st.success(f"'{title}' がリストに追加されました。")
             else:
@@ -144,9 +135,8 @@ if st.session_state.videos:
         description_text = ""
         total_duration = timedelta()  # 累積再生時間
         for video in st.session_state.videos:
-            # total_durationを表示用に時:分:秒に変換
             start_time = str(total_duration)
-            description_text += f"{start_time} | {video['title']} ({video['publish_date']}公開)\n{video['url']}\n\n"
+            description_text += f"{start_time} | {video['title']}\n{video['url']}\n\n"
             total_duration += video['duration']
         
         st.subheader("生成されたYouTube概要欄")
