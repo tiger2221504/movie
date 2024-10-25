@@ -217,20 +217,8 @@ if st.session_state.videos:
                 # 動画クリップを読み込む（720pに固定されている）
                 clip = VideoFileClip("temp_video.mp4")
                 
-                # 公開日をテキストクリップとして生成し、動画の左上に配置
-                text = TextClip(
-                    video["published_date"],
-                    fontsize=90,
-                    color="white",
-                    font="Arial"
-                ).set_position(("left", 10)).set_duration(clip.duration)
-
-                # テキストクリップをオーバーレイ
-                combined = concatenate_videoclips([text.set_start(0), clip])
-                clips.append(combined)
-                
                 # クリップをリストに追加
-                clips.append(combined)
+                clips.append(clip)
 
             except Exception as e:
                 st.warning(f"{video['title']}の処理中にエラーが発生しました: \n{e}")
