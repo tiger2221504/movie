@@ -7,6 +7,7 @@ import re
 import requests
 from datetime import datetime, timedelta
 from moviepy.editor import VideoFileClip, TextClip, concatenate_videoclips
+from PIL import Image
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -213,7 +214,7 @@ if st.session_state.videos:
                 published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
                 
                 # 動画クリップを1280x720にリサイズ
-                clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
+                clip = VideoFileClip("temp_video.mp4").resize((1280, 720), Image.LANCZOS)
                 
                 # 公開日をテキストクリップとして生成し、動画の左上に配置
                 text = TextClip(
