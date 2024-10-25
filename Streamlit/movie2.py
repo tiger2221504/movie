@@ -143,9 +143,16 @@ if st.session_state.videos:
 
    # 生成開始
     if st.button("作成開始"):
+        # 概要欄文章の生成
         description_text = ""
         for video in st.session_state.videos:
             description_text += f"{video['duration']} | {video['title']} \n{video['url']}\n\n"
         
-        st.subheader("生成されたYouTube概要欄")
-        st.text_area("概要欄の内容", description_text, height=300)
+        st.subheader("YouTube概要欄")
+        st.text_area("概要欄の内容", description_text, height=300, disabled=True)
+
+
+        # まとめ動画の作成
+        st.subheader("動画の出力")
+            # プログレスバーも表示させる
+            # 出力が完了したら完成した動画を表示
