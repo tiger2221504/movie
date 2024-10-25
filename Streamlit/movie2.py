@@ -152,9 +152,19 @@ if st.session_state.videos:
         st.text_area("概要欄の内容", description_text, height=300)
         # JavaScriptを使ってクリップボードにコピーするボタンを作成
         copy_button = """
-        <button onclick="navigator.clipboard.writeText(document.getElementById('text-area').value)">
-            クリップボードにコピー
-        </button>
+        <button onclick="copyText()">コピー</button>
+        <p id="copy-message" style="color:green; display:none;">☑コピーしました</p>
+
+        <script>
+        function copyText() {
+            navigator.clipboard.writeText(document.getElementById('text-area').value).then(function() {
+                document.getElementById('copy-message').style.display = 'block';
+                setTimeout(function() {
+                    document.getElementById('copy-message').style.display = 'none';
+                }, 2000);  // 2秒間表示
+            });
+        }
+        </script>
         """
         # ボタンとテキストエリアをID付きで表示
         st.components.v1.html(
