@@ -16,6 +16,7 @@ st.set_page_config(
          'About': """
          # まとめ動画作成アプリ
          動画を作れます
+         @ 2024 yamazumi
          """
      }
 )
@@ -80,7 +81,7 @@ def parse_duration_to_seconds(iso_duration):
 
 # 秒を「時:分:秒」形式に変換する関数
 def format_seconds(seconds):
-    return str(timedelta(seconds=seconds))
+    return str(timedelta(seconds=int(seconds)))
 
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画または再生リストのURLを入力してください")
