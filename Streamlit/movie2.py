@@ -3,7 +3,7 @@ import streamlit as st
 from pytube import YouTube
 import re
 import requests
-from datetime import datetime
+from datetime import datetime ,timedelta
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -17,7 +17,6 @@ st.set_page_config(
          'About': """
          # まとめ動画作成アプリ
          動画を作れます
-         @ 2024 yamazumi
          """
      }
 )
@@ -71,14 +70,14 @@ def get_playlist_video_ids(playlist_id):
             break
     return video_ids
 
-# ISO 8601の期間を時:分:秒に変換する関数
+# "ISO8601"の期間を秒に変換する関数
 def convert_duration(iso_duration):
     pattern = r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?'
     match = re.match(pattern, iso_duration)
     hours = int(match.group(1)) if match.group(1) else 0
     minutes = int(match.group(2)) if match.group(2) else 0
     seconds = int(match.group(3)) if match.group(3) else 0
-    return f"{hours}:{minutes:02}:{seconds:02}"
+    return hours * 3600 + minutes * 60 + seconds
 
 
 
@@ -142,8 +141,8 @@ if st.session_state.videos:
         description_text = ""
         duration_sum = 0
         for video in st.session_state.videos:
-            description_text += f"{convert_duration(duration_sum)} | {video['title']} \n{video['url']}\n\n"
-            duration_sum += video['duration']
+            description_text += f"{timedelta(seconds=duration_sum)} | {video['title']} \n{video['url']}\n\n"
+            duration_sum += convert_duration(video['duration'])
         
         st.subheader("生成されたYouTube概要欄")
         st.text_area("概要欄の内容", description_text, height=300)
