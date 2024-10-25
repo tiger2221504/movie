@@ -2,6 +2,7 @@ import os
 import streamlit as st
 from pytube import YouTube
 from pytube.exceptions import VideoUnavailable
+import youtube_dl
 import re
 import requests
 from datetime import datetime, timedelta
@@ -86,43 +87,15 @@ def format_date(iso_date):
     date_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
     return date_obj.strftime("%Y/%m/%d")
 
-# 動画のリストを1本にまとめる関数
-def create_summary_video(videos):
-    clips = []
-    for video in videos:
-        # 動画をYouTubeからダウンロード
-        yt = YouTube(video["url"])
-        stream = yt.streams.filter(file_extension="mp4", resolution="720p").first()
-        stream.download(filename="temp_video.mp4")
-        
-        # 動画クリップを1280x720にリサイズ
-        clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
-        
-        # 公開日をテキストクリップとして生成し、動画の左上に配置
-        text = TextClip(
-            video["published_date"],
-            fontsize=90,
-            color="white",
-            font="Arial"
-        ).set_position(("left", 10)).set_duration(clip.duration)
-        
-        # テキストクリップと動画クリップを重ねる
-        clip = clip.set_duration(clip.duration)
-        composite = VideoFileClip("temp_video.mp4").resize((1280, 720))
-        composite = composite.set_duration(clip.duration).set_position("center")
-        combined = concatenate_videoclips([clip, composite])
-        
-        # クリップをリストに追加
-        clips.append(combined)
-        
-        # 一時ファイルを削除
-        os.remove("temp_video.mp4")
-    
-    # すべての動画クリップを結合
-    final_clip = concatenate_videoclips(clips, method="compose")
-    final_clip.write_videofile("summary_video.mp4", codec="libx264")
-    
-    return "summary_video.mp4"
+def download_video(url, filename="temp_video.mp4"):
+    ydl_opts = {
+        'format': 'best[height<=720]',  # 720p以下の最高画質を取得
+        'outtmpl': filename,
+        'quiet': True
+    }
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+    return info
 
 
 
@@ -234,9 +207,9 @@ if st.session_state.videos:
         for video in st.session_state.videos:
             try:
                 # 動画をYouTubeからダウンロード
-                yt = YouTube(video["url"])
-                stream = yt.streams.filter(file_extension="mp4", resolution="720p").first()
-                stream.download(filename="temp_video.mp4")
+                info = download_video(video["url"], filename="temp_video.mp4")
+                title = info.get("title", "Untitled")
+                published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
                 
                 # 動画クリップを1280x720にリサイズ
                 clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
