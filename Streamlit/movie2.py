@@ -27,8 +27,6 @@ st.title('まとめ動画作成アプリ')
 # session_stateに動画リストと入力欄の値がなければ初期化
 if "videos" not in st.session_state:
     st.session_state.videos = []
-if "rerun" not in st.session_state:
-    st.session_state.rerun = False  # ダミー変数
 
 # YouTubeの動画IDを抽出する関数
 def get_video_id(url):
@@ -84,13 +82,8 @@ if st.button("動画を追加"):
 if st.session_state.videos:
     st.subheader("追加された動画リスト")
     for idx, video in enumerate(st.session_state.videos):
-        col1, col2 = st.columns([4, 1])
-
-        with col1:
-            st.write(f"{idx + 1}. {video['title']} | {video['duration']} | {video['url']}")
-
-        # 削除ボタン
-        with col2:
-            if st.button("削除", key=f"delete-{idx}"):
-                st.session_state.videos.pop(idx)
-                st.experimental_rerun()  # 削除後に再描画
+        st.write(f"{idx + 1}. {video['title']} | {video['duration']} | {video['url']}")
+        if st.button(f"{idx + 1}を削除", key=f"delete-{idx}"):
+            st.session_state.videos.pop(idx)
+            # 再描画を強制
+            st.experimental_set_query_params()
