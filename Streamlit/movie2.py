@@ -3,6 +3,7 @@ import streamlit as st
 from pytube import YouTube
 import re
 import requests
+from datetime import datetime
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -79,6 +80,14 @@ def convert_duration(iso_duration):
     seconds = int(match.group(3)) if match.group(3) else 0
     return f"{hours}:{minutes:02}:{seconds:02}"
 
+# 日付フォーマットを変換する関数
+def format_date(iso_date):
+    date_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
+    return date_obj.strftime("%Y/%m/%d")
+
+
+
+
 # 動画のURLを入力するセクション
 video_url = st.text_input("YouTube動画または再生リストのURLを入力してください")
 
@@ -131,3 +140,13 @@ if st.session_state.videos:
             st.session_state.videos.pop(idx)
             # 再描画を強制
             st.experimental_set_query_params()
+
+
+   # 生成開始
+    if st.button("作成開始"):
+        description_text = ""
+        for video in st.session_state.videos:
+            description_text += f"{video['duration']} | {video['title']} ({video['publish_date']}公開)\n{video['url']}\n\n"
+        
+        st.subheader("生成されたYouTube概要欄")
+        st.text_area("概要欄の内容", description_text, height=300)
