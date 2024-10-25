@@ -149,7 +149,21 @@ if st.session_state.videos:
             description_text += f"{video['duration']} | {video['title']} \n{video['url']}\n\n"
         
         st.subheader("YouTube概要欄")
-        st.text_area("概要欄の内容", description_text, height=300, disabled=True)
+        st.text_area("概要欄の内容", description_text, height=300)
+        # JavaScriptを使ってクリップボードにコピーするボタンを作成
+        copy_button = """
+        <button onclick="navigator.clipboard.writeText(document.getElementById('text-area').value)">
+            クリップボードにコピー
+        </button>
+        """
+        # ボタンとテキストエリアをID付きで表示
+        st.components.v1.html(
+            f"""
+            <textarea id="text-area" style="display:none;">{description_text}</textarea>
+            {copy_button}
+            """,
+            height=100,
+        )
 
 
         # まとめ動画の作成
