@@ -93,7 +93,7 @@ if st.session_state.videos:
                 if st.button("上へ", key=f"move-up-{idx}"):
                     # 現在の要素と1つ上の要素を入れ替え
                     st.session_state.videos[idx], st.session_state.videos[idx - 1] = st.session_state.videos[idx - 1], st.session_state.videos[idx]
-                    st.query_params()  # 再描画を強制
+                    st.set_query_params()  # 再描画を強制
 
         # 「下へ」ボタン
         if idx < len(st.session_state.videos) - 1:  # 最後の要素以外に表示
@@ -101,10 +101,10 @@ if st.session_state.videos:
                 if st.button("下へ", key=f"move-down-{idx}"):
                     # 現在の要素と1つ下の要素を入れ替え
                     st.session_state.videos[idx], st.session_state.videos[idx + 1] = st.session_state.videos[idx + 1], st.session_state.videos[idx]
-                    st.query_params()  # 再描画を強制
+                    st.set_query_params()  # 再描画を強制
 
         # 削除ボタン
         with col4:
             if st.button("削除", key=f"delete-{idx}"):
                 st.session_state.videos.pop(idx)
-                st.query_params()  # 再描画を強制
+                st.set_query_params()  # 再描画を強制
