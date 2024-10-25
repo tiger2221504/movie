@@ -30,6 +30,10 @@ if "videos" not in st.session_state:
 if "video_url" not in st.session_state:
     st.session_state.video_url = ""
 
+# 動画URLの入力欄をクリアする関数
+def clear_video_url():
+    st.session_state.video_url = ""
+
 # YouTubeの動画IDを抽出する関数
 def get_video_id(url):
     pattern = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
@@ -76,7 +80,7 @@ if st.button("動画を追加"):
             })
             st.success(f"'{title}' ({readable_duration}) がリストに追加されました。")
             # 入力欄をクリア
-            st.session_state.video_url = ""  # 動画追加後に入力欄をクリア
+            clear_video_url()  # 動画追加後に入力欄をクリア
         else:
             st.error("動画情報の取得に失敗しました。")
     else:
