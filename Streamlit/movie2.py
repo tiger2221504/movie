@@ -3,7 +3,7 @@ import streamlit as st
 from pytube import YouTube
 import re
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # YouTube Data APIキー
 API_KEY = st.secrets["YOUTUBE_API_KEY"]
@@ -145,8 +145,10 @@ if st.session_state.videos:
    # 生成開始
     if st.button("作成開始"):
         description_text = ""
+        total_duration = timedelta()
         for video in st.session_state.videos:
-            description_text += f"{video['duration']} | {video['title']}\n{video['url']}\n\n"
+            description_text += f"{str(total_duration)} | {video['title']} ({video['publish_date']}公開)\n{video['url']}\n\n"
+            total_duration += video['duration']
         
         st.subheader("生成されたYouTube概要欄")
         st.text_area("概要欄の内容", description_text, height=300)
