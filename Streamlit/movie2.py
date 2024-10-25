@@ -214,7 +214,7 @@ if st.session_state.videos:
                 published_date = datetime.strptime(info["upload_date"], "%Y%m%d").strftime("%Y/%m/%d")
                 
                 # 動画クリップを1280x720にリサイズ
-                clip = VideoFileClip("temp_video.mp4").resize((1280, 720))
+                clip = VideoFileClip("temp_video.mp4").resize((1280, 720), method="ffmpeg")
                 
                 # 公開日をテキストクリップとして生成し、動画の左上に配置
                 text = TextClip(
