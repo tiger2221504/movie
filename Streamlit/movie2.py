@@ -77,7 +77,7 @@ def convert_duration(iso_duration):
     hours = int(match.group(1)) if match.group(1) else 0
     minutes = int(match.group(2)) if match.group(2) else 0
     seconds = int(match.group(3)) if match.group(3) else 0
-    return f"{hours}:{minutes:02}:{seconds:02}"
+    return timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
 # 日付フォーマットを変換する関数
 def format_date(iso_date):
