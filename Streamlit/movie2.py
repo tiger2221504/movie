@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from pytube import YouTube
 from pytube.exceptions import VideoUnavailable
-import youtube_dl
+from yt_dlp import YoutubeDL
 import re
 import requests
 from datetime import datetime, timedelta
@@ -87,13 +87,14 @@ def format_date(iso_date):
     date_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
     return date_obj.strftime("%Y/%m/%d")
 
+# 動画をDLする関数
 def download_video(url, filename="temp_video.mp4"):
     ydl_opts = {
         'format': 'best[height<=720]',  # 720p以下の最高画質を取得
         'outtmpl': filename,
         'quiet': True
     }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
     return info
 
