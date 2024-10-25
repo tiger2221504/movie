@@ -147,7 +147,7 @@ if st.session_state.videos:
         description_text = ""
         total_duration = timedelta()
         for video in st.session_state.videos:
-            description_text += f"{str(total_duration)} | {video['title']} ({video['publish_date']}公開)\n{video['url']}\n\n"
+            description_text += f"{str(total_duration)} | {video['title']} \n{video['url']}\n\n"
             total_duration += video['duration']
         
         st.subheader("生成されたYouTube概要欄")
